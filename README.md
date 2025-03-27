@@ -2,11 +2,11 @@
 
 
 
-## 🔧 Integration of Comprehensive Conflict Resolution Methods and Evaluation Datasets/Frameworks：Support the rapid implementation of various conflict resolution methods and A Multidimensional Unified Assessment of Conflict Resolution Methods
+**Integration of Comprehensive Conflict Resolution Methods and Evaluation Datasets/Frameworks：Support the rapid implementation of various conflict resolution methods and A Multidimensional Unified Assessment of Conflict Resolution Methods**
 
 
 
-### Conflict resolution method
+## 🔧 Conflict resolution method
 
 - CM Conflict Resolution
   - Faithful to Context
