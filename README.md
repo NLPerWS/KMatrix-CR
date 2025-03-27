@@ -54,14 +54,14 @@
 
 |               | **Type**   | **Construction Method** | **Scale** | **Causes of Conflict**                        |
 | ------------- | ---------- | ----------------------- | --------- | --------------------------------------------- |
-| ConflictQA    | CM         | 大模型生成+后校验       | 20091     | Misinformation  Conflict                      |
-| CONFLICTINGQA | IC         | 大模型生成+后校验       | 238       | Misinformation  Conflict                      |
-| ContraDoc     | IC         | 大模型生成+后校验       | 449       | Misinformation  Conflict                      |
-| AttackODQA    | IC         | 实体替换、大模型生成    | 52189     | Misinformation  Conflict                      |
-| Farm          | CM         | 大模型生成              | 1952      | Misinformation  Conflict                      |
-| BlindGC       | CM         | 大模型生成              | 14923     | Misinformation  Conflict                      |
-| KC            | CM         | 实体替换                | 9803      | Misinformation  Conflict                      |
-| ConflictBank  | CM、IC、IM | 大模型生成+质量控制     | 55W       | Misinformation、  Temporal、Semantic Conflict |
+| ConflictQA    | CM         | LLM generation+Post-validation       | 20091     | Misinformation  Conflict                      |
+| CONFLICTINGQA | IC         | LLM generation+Post-validation       | 238       | Misinformation  Conflict                      |
+| ContraDoc     | IC         | LLM generation+Post-validation       | 449       | Misinformation  Conflict                      |
+| AttackODQA    | IC         | Entity Replacement、LLM generation    | 52189     | Misinformation  Conflict                      |
+| Farm          | CM         | LLM generation              | 1952      | Misinformation  Conflict                      |
+| BlindGC       | CM         | LLM generation              | 14923     | Misinformation  Conflict                      |
+| KC            | CM         | Entity Replacement                | 9803      | Misinformation  Conflict                      |
+| ConflictBank  | CM、IC、IM | LLM generation+Quality Control     | 55W       | Misinformation、  Temporal、Semantic Conflict |
 
 
 
