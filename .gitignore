@@ -1,3 +1,14 @@
+
+*
+!/requirements.txt
+!/README.md
+!/LICENSE
+!/.gitignore
+
+!/kmatrix_cr/
+!/kmatrix_cr/**
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -127,15 +138,6 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -169,6 +171,5 @@ cython_debug/
 
 # Ruff stuff:
 .ruff_cache/
-
 # PyPI configuration file
 .pypirc
