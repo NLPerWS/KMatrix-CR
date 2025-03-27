@@ -2,7 +2,7 @@
 
 
 
-## 🔧 Integration of Comprehensive Conflict Resolution Methods and Evaluation Datasets/Frameworks
+## 🔧 Integration of Comprehensive Conflict Resolution Methods and Evaluation Datasets/Frameworks：Support the rapid implementation of various conflict resolution methods and A Multidimensional Unified Assessment of Conflict Resolution Methods
 
 
 
@@ -21,14 +21,6 @@
 - IM Conflict Resolution
   - Improving Consistency
   - Improving Factuality
-
-### Support the rapid implementation of various conflict resolution methods
-
-
-
-### A Multidimensional Unified Assessment of Conflict Resolution Methods
-
-
 
 
 
@@ -52,15 +44,15 @@
 
 ## 📄 Evaluation of multi-dimensional dataset integration
 
-|               | **Type**   | **Construction Method** | **Scale** | **Causes of Conflict**                        |
-| ------------- | ---------- | ----------------------- | --------- | --------------------------------------------- |
-| ConflictQA    | CM         | LLM generation+Post-validation       | 20091     | Misinformation  Conflict                      |
-| CONFLICTINGQA | IC         | LLM generation+Post-validation       | 238       | Misinformation  Conflict                      |
-| ContraDoc     | IC         | LLM generation+Post-validation       | 449       | Misinformation  Conflict                      |
-| AttackODQA    | IC         | Entity Replacement、LLM generation    | 52189     | Misinformation  Conflict                      |
-| Farm          | CM         | LLM generation              | 1952      | Misinformation  Conflict                      |
-| BlindGC       | CM         | LLM generation              | 14923     | Misinformation  Conflict                      |
-| KC            | CM         | Entity Replacement                | 9803      | Misinformation  Conflict                      |
+|               | **Type**   | **Construction Method**            | **Scale** | **Causes of Conflict**                        |
+| ------------- | ---------- | ---------------------------------- | --------- | --------------------------------------------- |
+| ConflictQA    | CM         | LLM generation+Post-validation     | 20091     | Misinformation  Conflict                      |
+| CONFLICTINGQA | IC         | LLM generation+Post-validation     | 238       | Misinformation  Conflict                      |
+| ContraDoc     | IC         | LLM generation+Post-validation     | 449       | Misinformation  Conflict                      |
+| AttackODQA    | IC         | Entity Replacement、LLM generation | 52189     | Misinformation  Conflict                      |
+| Farm          | CM         | LLM generation                     | 1952      | Misinformation  Conflict                      |
+| BlindGC       | CM         | LLM generation                     | 14923     | Misinformation  Conflict                      |
+| KC            | CM         | Entity Replacement                 | 9803      | Misinformation  Conflict                      |
 | ConflictBank  | CM、IC、IM | LLM generation+Quality Control     | 55W       | Misinformation、  Temporal、Semantic Conflict |
 
 
