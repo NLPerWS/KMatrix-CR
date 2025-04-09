@@ -35,6 +35,7 @@
 |    CM    |         Context-Faithful         |
 |    CM    |         Aware-Decoding         |
 | CM | ContrastiveDecoding |
+|    CM    |         Disent_QA         |
 |    CM    |         Retrieveorgenerated         |
 |    CM    |         Llms_believe_the_earth_is_flat         |
 |    IM    |        Dola          |

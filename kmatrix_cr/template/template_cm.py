@@ -7,18 +7,17 @@ import socket
 import subprocess
 from typing import Literal
 from kmatrix_cr.config.config import Config
-from accelerate import Accelerator
-from accelerate.utils import KwargsHandler
 import argparse
 import torch
 from kmatrix_cr.utils.common_utils import eval
+import shutil
 
 class CMTemplate:
-    ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","retrieveorgenerated","llms_believe_the_earth_is_flat"]
+    ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","retrieveorgenerated","llms_believe_the_earth_is_flat"]
     
     def __init__(self,
                 config : Config,
-                conflict_method: Literal["coiecd","context-faithful","aware-decoding","ContrastiveDecoding",'retrieveorgenerated','llms_believe_the_earth_is_flat'],
+                conflict_method: Literal["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA",'retrieveorgenerated','llms_believe_the_earth_is_flat'],
                 args_kwargs: dict = {}
     ):
         if conflict_method not in self.ALLOWED_CONFLICT_METHODS:
@@ -258,6 +257,76 @@ class CMTemplate:
 
             result = {
                 "result":res_list
+            }
+
+
+        elif self.conflict_method == "Disent_QA":
+
+            from kmatrix_cr.toolkit.disent_qa.query_model import main as disentqa_query_model_main
+            from kmatrix_cr.toolkit.disent_qa.evaluate import main as disentqa_eva_main
+            
+            parser = argparse.ArgumentParser()
+            args = parser.parse_args()
+            args.path = self.dataset.dataset_path
+            args.checkpoint_name = self.llm_model.model_name
+            
+            infer_file_path_list = []
+            for answer_type in ["f","cf","rc","cb"]:
+                args.answer_type = answer_type
+                infer_file_path_list.append(disentqa_query_model_main(args))
+            print("-------------disent_qa query_model finished-------------------")
+            
+            eva_file_name_list = []
+            for infer_file_path in infer_file_path_list:
+                args.path = infer_file_path
+                eva_file_name_list.append(disentqa_eva_main(args))
+            print("-------------disent_qa evaluate finished-------------------")
+            # print("------------------------eva_file_name_list-------------------------\n",eva_file_name_list)
+            
+            res_obj = {}
+            for file_path in eva_file_name_list:
+                with open(file_path,'r',encoding='utf-8') as f:
+                    res_list = f.readlines()
+                if "factual_inference.stat" in file_path:
+                    index = 1
+                    flag = "factual"
+                if "counterfactual_inference.stat" in file_path:
+                    index = 2
+                    flag = "counterfactual"
+                if "closed_book_inference.stat" in file_path:
+                    index = 3
+                    flag = "closed_book"
+                if "random_context_inference.stat" in file_path:
+                    index = 4
+                    flag = "random_context"
+                
+                temp_obj = {}
+                title_list = res_list[0].strip().split(",")
+                score_list = res_list[index].strip().split(",")
+                
+                # print("-------------------------file_path-------------------------\n",file_path)
+                # print("-------------------------index-------------------------\n",index)
+                # print("-------------------------flag-------------------------\n",flag)
+                # print("-------------------------title_list-------------------------\n",title_list)
+                # print("-------------------------score_list-------------------------\n",score_list)
+                # print("======================================================================")
+                
+                assert len(title_list) == len(score_list)
+                
+                for title,score in zip(title_list,score_list):
+                    temp_obj[title] = score
+                
+                res_obj[flag] = temp_obj
+            
+            folder_path = os.getcwd() + "/" + "kmatrix_cr/toolkit/disent_qa/result/"
+            if os.path.exists(folder_path) and os.path.isdir(folder_path):
+                shutil.rmtree(folder_path)
+                os.makedirs(folder_path) # 重新创建空目录
+            else:
+                pass
+            
+            result = {
+                "result":res_obj
             }
 
 
