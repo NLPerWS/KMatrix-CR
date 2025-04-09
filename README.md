@@ -57,7 +57,7 @@
 
 
 
-## 📄 Knowledgeconflictresolutionevaluation
+## 📄 Knowledge Conflict Resolution Evaluation
 
 |                        |     Method     |  Acc   |
 | :--------------------: | :------------: | :----: |
