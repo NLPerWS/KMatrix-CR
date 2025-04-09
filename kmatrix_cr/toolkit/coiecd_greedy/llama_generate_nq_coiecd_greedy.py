@@ -187,7 +187,7 @@ def model_answer(model, tokenizer, question, facts, tgt_len):
     
     return gen_answer #, cond_answer, uncond_answer
 
-def main(model,tokenizer,data_list,metrics=[],do_eval=False):
+def main(model,tokenizer,data_list):
     
     tokenizer.pad_token_id = 0
     id = 0
@@ -197,7 +197,6 @@ def main(model,tokenizer,data_list,metrics=[],do_eval=False):
     # data = data[:10]
     final_data_list = []
     
-    print(f"do eval: : {do_eval}, {metrics}")
     
     rex_count_ok = 0
     in_count_ok = 0
@@ -230,17 +229,7 @@ def main(model,tokenizer,data_list,metrics=[],do_eval=False):
             if ground_truth in gen_answer:
                 in_count_ok += 1
 
-        result = {
-            "result":final_data_list
-        }
-        
-        if do_eval:
-            if "acc" in metrics:
-                result['rex_acc'] = f'{rex_count_ok/id:.2%}'
-                result['in_acc'] = f'{in_count_ok/id:.2%}'
-
-
-    return result
+    return final_data_list
 
 
 if __name__ == '__main__':

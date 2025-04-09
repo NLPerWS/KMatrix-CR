@@ -240,20 +240,9 @@ def main(args):
     #         for l in candidate_premature_layers:
     #             print('Premature layer {0} was used {1} times, {2}%'.format(l, premature_layer_dist[l], round(premature_layer_dist[l] / total_tokens * 100, 2)))
         
-    result = {
-        "result":result_dict
-    }
-
     print(f"{float(sum(answers))/len(answers)}")
 
-    if args.do_eval:
-        if "acc" in args.metrics:
-            # final_acc_str = f'correct num: {sum(answers)},correct rate: {float(sum(answers))/len(answers)}.'
-            # print(final_acc_str)
-            # result['acc'] = final_acc_str
-            result['acc'] = f'{float(sum(answers))/len(answers)}'
-    
-    return result
+    return result_dict
         
 
 if __name__ == "__main__":

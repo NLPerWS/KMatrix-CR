@@ -262,19 +262,23 @@ class context_conflicting_dataset:
     def _load_data(self):
         try:
             self.data_com = load_all_jsonl(self.path[0])
-        except:
+        except Exception as e:
+            print(e)
             print("path error! paths = {}".format(self.path[0]))
         try:    
             self.data_gen = load_all_jsonl(self.path[1])
-        except:
+        except Exception as e:
+            print(e)
             print("path error! paths = {}".format(self.path[1]))
         try:
             self.data_ir = load_all_jsonl(self.path[2])
-        except:
+        except Exception as e:
+            print(e)
             print("path error! paths = {}".format(self.path[2]))
         try:
             self.data_llm = load_all_jsonl(self.path[3])
-        except:
+        except Exception as e:
+            print(e)
             print("path error! paths = {}".format(self.path[3]))
         
         print("len gen: {} ir: {} com: {} llm: {}".format(len(self.data_gen), len(self.data_ir), len(self.data_com), len(self.data_llm)))
