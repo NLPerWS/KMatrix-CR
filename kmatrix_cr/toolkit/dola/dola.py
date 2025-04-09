@@ -135,6 +135,7 @@ class DoLa:
                 #                         top_p=top_p, top_k=top_k, temperature=temperature, stopping_criteria=self.stopping_criteria, relative_top=relative_top, 
                 #                         mature_layer=mature_layer, premature_layer=None, candidate_premature_layers=candidate_premature_layers, **kwargs,)
                 
+                
                 outputs = self.model.generate(input_ids, max_length=max_len, num_return_sequences=1,
                                         output_scores=True, return_dict_in_generate=True, dola_layers=candidate_premature_layers,
                                         top_p=top_p, top_k=top_k, temperature=temperature, stopping_criteria=self.stopping_criteria,

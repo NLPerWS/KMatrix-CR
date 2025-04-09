@@ -3,7 +3,7 @@ import json
 import os
 from typing import Literal
 from kmatrix_cr.config.config import Config
-
+from kmatrix_cr.utils.common_utils import eval
 
 class IMTemplate:
     ALLOWED_CONFLICT_METHODS = ["dola","concord"]
@@ -19,7 +19,9 @@ class IMTemplate:
         self.config = config
         self.conflict_method = conflict_method
         self.dataset = self.config.dataset
-        self.model = self.config.model
+        self.llm_model = self.config.llm_model
+        self.openai_model = self.config.openai_model
+        
         self.metrics = self.config.metrics
         self.data_list =  self.dataset.data_list
         
@@ -55,19 +57,18 @@ class IMTemplate:
             parser.add_argument("--retry", type=int, default=1)
             args = parser.parse_args()
             
-            args.model_name=self.model.model_name
+            args.model_name=self.llm_model.model_name
             args.data_list=self.data_list
-            args.do_eval=do_eval
-            args.metrics=self.metrics
             args.early_exit_layers = "0,2,4,6,8,10,12,14,32"
             result = strategyqa_main(args=args)
+            result = {"result":result}
 
         elif self.conflict_method == "concord":
             from kmatrix_cr.toolkit.concord.semantic_filtering.eval_retrieve import main as concord_main
             
             if self.args_kwargs['concord_model_weights_path'] == "" or not os.path.exists(self.args_kwargs['concord_model_weights_path']):
                 raise ValueError("concord_model_weights_path must be exists")
-            if self.model.model_name not in ['t5-small','t5-large','t5-3b']:
+            if self.llm_model.model_name not in ['t5-small','t5-large','t5-3b']:
                 raise ValueError("concord method model must be {t5-small or t5-large or t5-3b}")
             
             parser = argparse.ArgumentParser()
@@ -92,18 +93,26 @@ class IMTemplate:
             args = parser.parse_args()
             args.mode = "gold"
             args.split = "test"
-            args.model = self.model.model_name
+            args.model = self.llm_model.model_name
             args.cache_dir = ""
             args.store_dir = self.dataset.dataset_path
             args.model_weights_path = self.args_kwargs['concord_model_weights_path']
-            args.metrics = self.metrics
-            args.do_eval = do_eval
             result = concord_main(args)
-        
-
+            result = {"result":result}
+            
         else:
             result = {}
         
+        
+        if do_eval:
+            eval_obj = eval(metrics=self.metrics,data=result,data_path="")
+            print(eval_obj)
+            
+            print(eval_obj['log_str'])
+            for key in eval_obj:
+                if key != "log_str":
+                    result[key] = eval_obj[key]
+                    
         if output_path != "":
             if result == {}:
                 print("result is empty  ")

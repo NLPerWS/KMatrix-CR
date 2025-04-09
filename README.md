@@ -28,16 +28,16 @@
 
 | **Type** |  **Model**/**Method**  |
 | :------: | :--------------------: |
-|    IC    |        Concord         |
+|    IC    |        ICL-whole         |
+|    IC    |        ICL-seprate         |
 |    IC    |        Factool         |
 |    CM    |         COIECD         |
-|    IC    |   Discern-and-Answer   |
-|    IC    | Disinformation-Defense |
-|    IM    |     Self-DETECTION     |
-|    IM    |      Honest_Llama      |
-|    IC    |          DoLa          |
-|    CM    |          CD2           |
-
+|    CM    |         Context-Faithful         |
+|    CM    |         Aware-Decoding         |
+|    CM    |         Retrieveorgenerated         |
+|    CM    |         Llms_believe_the_earth_is_flat         |
+|    IM    |        Dola          |
+|    IM    |        Concord          |
 
 
 
@@ -57,6 +57,17 @@
 
 
 
+## 📄 Knowledgeconflictresolutionevaluation
+
+|                        |     Method     |  Acc   |
+| :--------------------: | :------------: | :----: |
+| CM Conflict Resolution | w/o knowledge  | 14.69% |
+|                        |  w/ knowledge  | 28.59% |
+|                        |    +COIECD     | 66.44% |
+| IC Conflict Resolution | w/o knowledge  | 0.01%  |
+|                        |  w/ knowledge  | 42.70% |
+|                        | +Discriminator | 50.00% |
+
 
 
 ## 💫 Example of Tool Usage/Operation
@@ -74,12 +85,11 @@ from kmatrix_cr.template.template_im import IMTemplate
 
 llama_model_path = "meta-llama/Llama-2-7b-chat-hf"
 dataset = Dataset(dataset_path="nq.jsonl")
-model = LLmGenerator(model_path=llama_model_path) 
+llm_model = LLmGenerator(model_path=llama_model_path) 
 config = Config(dataset=dataset,
-                model=model,
+                llm_model=llm_model,
                 metrics = ["acc"])
 template = CMTemplate(config=config,conflict_method="coiecd")
 result = template.run(output_path="cm_coiecd_"+llama_model_path.replace("/","_")+".json")
-print(result)
 ```
 

@@ -264,7 +264,10 @@ def main(args):
                         
             print(f'Output: {output}')
 
-            answer = sample['ground_truth'][0]
+            try:
+                answer = sample['ground_truth'][0]
+            except:
+                answer = sample['answer']
             
             if turn <= num_failures:
                 judge = check_answer_mc(output, sample['adv']['mcq'])
@@ -388,8 +391,8 @@ def main(args):
         with open(result_model_name_path, 'a', newline='') as f:
             writer = csv.writer(f)
             writer.writerow([model_name,dataset_name,adv_test,sr,mean_turns,max_turns,min_turns,wrong_answer_counts,persuaded_counts,npd,";".join([str(c) for c in persuasion_counts]), ";".join([str(c) for c in correct_num])])
-    result = {
-    }
+    
+    json_data = []
     if os.path.exists(result_model_name_path):
         with open(result_model_name_path, 'r',encoding='utf-8') as f:
             csv_data = f.read()
@@ -400,11 +403,11 @@ def main(args):
             row['persuasion_counts'] = row['persuasion_counts'].split(';')
             row['correct_num'] = row['correct_num'].split(';')
             json_data.append(row)
-        json_output = json.dumps(json_data, ensure_ascii=False)
-        result = json_output
+        # json_output = json.dumps(json_data, ensure_ascii=False)
+        # result = json_output
         os.remove(result_model_name_path)
 
-    return result
+    return json_data
             
 if __name__ == "__main__":
    

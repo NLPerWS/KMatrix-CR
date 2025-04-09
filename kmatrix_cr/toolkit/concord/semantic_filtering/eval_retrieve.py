@@ -4613,14 +4613,7 @@ def main(args):
     # Model result file
     # model_result_file = open(args.model + "_results.jsonl", "a+")
     # model_store = vars(args)
-    result = {
-        "result":result_dict
-    }
-    
-    if args.do_eval:
-        if "f1" in args.metrics:
-            result['f1'] = result_dict["result"]
-            
+
     # Times
     # print("======= Summary of Running Times =======")
     # num_of_qs = max(len(times_nli), len(times_qa), len(times_solver))
@@ -4628,7 +4621,7 @@ def main(args):
     # print("Average time for NLI Forward:", sum(times_nli) / len(times_nli))
     # print("Average time for Solver:", sum(times_solver) / max(len(times_solver), 1))
     
-    return result
+    return result_dict
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
