@@ -16,7 +16,7 @@ class Dataset:
         self.data_list = []
         if load_data:
             self.load_data()
-            # self.data_list = self.data_list[0:5]
+            self.data_list = self.data_list[0:5]
 
     def load_data(self):
         

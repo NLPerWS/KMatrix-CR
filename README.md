@@ -34,6 +34,7 @@
 |    CM    |         COIECD         |
 |    CM    |         Context-Faithful         |
 |    CM    |         Aware-Decoding         |
+| CM | ContrastiveDecoding |
 |    CM    |         Retrieveorgenerated         |
 |    CM    |         Llms_believe_the_earth_is_flat         |
 |    IM    |        Dola          |

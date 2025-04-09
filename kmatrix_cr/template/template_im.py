@@ -61,7 +61,14 @@ class IMTemplate:
             args.data_list=self.data_list
             args.early_exit_layers = "0,2,4,6,8,10,12,14,32"
             result = strategyqa_main(args=args)
-            result = {"result":result}
+            
+            for data,res,is_correct,model_completion,full_input_text in zip(self.data_list,result['model_answer'],result['is_correct'],result['model_completion'],result['full_input_text']):
+                data['gen_answer'] = res
+                data['is_correct'] = is_correct
+                data['model_completion'] = model_completion
+                data['full_input_text'] = full_input_text
+            
+            result = {"result":self.data_list}
 
         elif self.conflict_method == "concord":
             from kmatrix_cr.toolkit.concord.semantic_filtering.eval_retrieve import main as concord_main

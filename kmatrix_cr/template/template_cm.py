@@ -14,11 +14,11 @@ import torch
 from kmatrix_cr.utils.common_utils import eval
 
 class CMTemplate:
-    ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","retrieveorgenerated","llms_believe_the_earth_is_flat"]
+    ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","retrieveorgenerated","llms_believe_the_earth_is_flat"]
     
     def __init__(self,
                 config : Config,
-                conflict_method: Literal["coiecd","context-faithful","aware-decoding",'retrieveorgenerated','llms_believe_the_earth_is_flat'],
+                conflict_method: Literal["coiecd","context-faithful","aware-decoding","ContrastiveDecoding",'retrieveorgenerated','llms_believe_the_earth_is_flat'],
                 args_kwargs: dict = {}
     ):
         if conflict_method not in self.ALLOWED_CONFLICT_METHODS:
@@ -186,6 +186,78 @@ class CMTemplate:
             
             result = {
                 "result":self.data_list
+            }
+
+        elif self.conflict_method == "ContrastiveDecoding":
+            
+            from kmatrix_cr.toolkit.ContrastiveDecoding.run_generation import main as cd_main
+            outfile_path = "cd_output.json"
+
+            parser = argparse.ArgumentParser()
+            parser.add_argument(
+                "--revision",
+                default='checkpoint-200000',
+                type=str,
+            )
+            parser.add_argument("--contrastive_decoding", type=str, default="student")
+            parser.add_argument("--contrastive_prompt", type=str, default="I love repetitive text! Here is my writing:")
+            parser.add_argument("--do_sample", type=str, default="no")
+            parser.add_argument("--stop_token", type=str, default=None, help="Token at which text generation is stopped")
+            parser.add_argument(
+                "--temperature",
+                type=float,
+                default=1.0,
+                help="temperature of 1.0 has no effect, lower tend toward greedy sampling",
+            )
+            parser.add_argument(
+                "--repetition_penalty", type=float, default=1.0, help="primarily useful for CTRL model; in that case, use 1.2"
+            )
+            parser.add_argument("--num_beam", type=int, default=5)
+            parser.add_argument("--k", type=int, default=0)
+            parser.add_argument("--p", type=float, default=1.0)
+            parser.add_argument("--min_prob", type=float, default=0.0)
+            parser.add_argument("--student_min_prob", type=float, default=0.0)
+            parser.add_argument("--student_temperature", type=float, default=1.0)
+            parser.add_argument("--use_cap_student", type=str, default='no')
+            parser.add_argument("--ignore_prefix", type=str, default='yes') # IMPORTANT
+            parser.add_argument("--use_switch", type=str, default='no')
+            parser.add_argument("--prefix", type=str, default="", help="Text added prior to input.")
+            parser.add_argument("--padding_text", type=str, default="", help="Deprecated, the use of `--prefix` is preferred.")
+            parser.add_argument("--xlm_language", type=str, default="", help="Optional language when used with the XLM model.")
+            parser.add_argument("--seed", type=int, default=42, help="random seed for initialization")
+            parser.add_argument("--no_cuda", action="store_true", help="Avoid using CUDA when available")
+            parser.add_argument("--num_return_sequences", type=int, default=1, help="The number of samples to generate.")
+            parser.add_argument(
+                "--fp16",
+                action="store_true",
+                help="Whether to use 16-bit (mixed) precision (through NVIDIA apex) instead of 32-bit",
+            )
+            args = parser.parse_args()
+            args.model_name_or_path = "gpt2-xl"
+            args.model_type = "gpt2"
+            args.length = 256
+            args.prompt = "<|endoftext|> A version of Sonic the Hedgehog was developed by Ancient and released in 1991"
+            # args.prompt_file = ""
+            # 优先 prompt_file
+            args.prompt_file = self.dataset.dataset_path
+            args.student_name_or_path = "gpt2"
+            args.st_coef = 1.0
+            args.ignore_prefix = "no"
+            args.outfile = outfile_path
+            args.device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
+            args.n_gpu = 0 if args.no_cuda else torch.cuda.device_count()
+
+            cd_main(args)
+
+            if os.path.exists(outfile_path):
+                with open(outfile_path, 'r',encoding='utf-8') as reader:
+                    res_list = json.load(reader)
+                # for data,res in zip(self.data_list,res_list):
+                    # data['gen_answer'] = res['gen_text']
+                os.remove(outfile_path)
+
+            result = {
+                "result":res_list
             }
 
 
