@@ -5,6 +5,7 @@
 **Integration of Comprehensive Conflict Resolution Methods and Evaluation Datasets/Frameworks：Support the rapid implementation of various conflict resolution methods and A Multidimensional Unified Assessment of Conflict Resolution Methods**
 
 
+![km-cr](images/km-cr.png)
 
 ## 🔧 Conflict resolution method
 
