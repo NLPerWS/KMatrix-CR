@@ -16,31 +16,29 @@
   - Improving Factuality
 
 - IC Conflict Resolution
-  - Eliminating Conflict
-  - Improving Robustness
+  - Improving Factuality
 
 - IM Conflict Resolution
-  - Improving Consistency
   - Improving Factuality
 
 
 
 ## 📓 Representative Knowledge Conflict Model/Method Integration
 
-| **Type** |  **Model**/**Method**  |
-| :------: | :--------------------: |
-|    IC    |        ICL-whole         |
-|    IC    |        ICL-seprate         |
-|    IC    |        Factool         |
-|    CM    |         COIECD         |
-|    CM    |         Context-Faithful         |
-|    CM    |         Aware-Decoding         |
-| CM | ContrastiveDecoding |
-|    CM    |         Disent_QA         |
-|    CM    |         Retrieveorgenerated         |
-|    CM    |         Llms_believe_the_earth_is_flat         |
-|    IM    |        Dola          |
-|    IM    |        Concord          |
+| **Type** |  **strategy**  |  **Model**/**Method**  |
+| :------: | :--------------------: | :--------------------: |
+|    IC    |        Improving Factuality         |        ICL-whole         |
+|    IC    |        Improving Factuality         |        ICL-seprate         |
+|    IC    |        Improving Factuality         |        Factool         |
+|    CM    |        Improving Factuality         |         COIECD         |
+|    CM    |        Faithful to Context         |         Context-Faithful         |
+|    CM    |        Faithful to Context         |         Aware-Decoding         |
+|    CM    |        Faithful to Context         |       ContrastiveDecoding |
+|    CM    |         Disentangling Sources         |         Disent_QA         |
+|    CM    |        Improving Factuality         |         Retrieveorgenerated         |
+|    CM    |        Faithful to Memory         |         Llms_believe_the_earth_is_flat         |
+|    IM    |        Improving Factuality         |        Dola          |
+|    IM    |        Improving Factuality         |        Concord          |
 
 
 
