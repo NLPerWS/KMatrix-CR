@@ -7,7 +7,7 @@
 
 ![km-cr](images/km-cr.png)
 
-## 🔧 Conflict resolution method
+## 🔧 Knowledge Conflict Resolution Strategy
 
 - CM Conflict Resolution
   - Faithful to Context
