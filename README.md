@@ -23,7 +23,7 @@
 
 
 
-## 📓 Representative Knowledge Conflict Model/Method Integration
+## 📓 Representative Knowledge Conflict Resolution Model/Method Integration
 
 | **Type** |  **strategy**  |  **Model**/**Method**  |
 | :------: | :--------------------: | :--------------------: |
@@ -43,7 +43,7 @@
 
 
 
-## 📄 Evaluation of multi-dimensional dataset integration
+## 📄  Multi-dimensional evaluation dataset integration
 
 |               | **Type**   | **Construction Method**            | **Scale** | **Causes of Conflict**                        |
 | ------------- | ---------- | ---------------------------------- | --------- | --------------------------------------------- |
