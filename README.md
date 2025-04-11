@@ -34,9 +34,9 @@
 |    CM    |        Faithful to Context         |         Context-Faithful         |
 |    CM    |        Faithful to Context         |         Aware-Decoding         |
 |    CM    |        Faithful to Context         |       ContrastiveDecoding |
+|    CM    |        Faithful to Memory         |         Llms_believe_the_earth_is_flat         |
 |    CM    |         Disentangling Sources         |         Disent_QA         |
 |    CM    |        Improving Factuality         |         Retrieveorgenerated         |
-|    CM    |        Faithful to Memory         |         Llms_believe_the_earth_is_flat         |
 |    IM    |        Improving Factuality         |        Dola          |
 |    IM    |        Improving Factuality         |        Concord          |
 
