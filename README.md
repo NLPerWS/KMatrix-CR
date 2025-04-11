@@ -2,7 +2,7 @@
 
 
 
-**Integration of Comprehensive Conflict Resolution Methods and Evaluation Datasets/Frameworks：Support the rapid implementation of various conflict resolution methods and A Multidimensional Unified Assessment of Conflict Resolution Methods**
+**Integration of comprehensive conflict resolution methods and evaluation datasets/frameworks：support the rapid implementation of various conflict resolution methods and a multidimensional unified assessment of conflict resolution methods**
 
 
 ![km-cr](images/km-cr.png)
@@ -73,7 +73,6 @@
 
 ## 💫 Example of Tool Usage/Operation
 
-Evaluation Metrics Integration (accuracy, F1-score, and additional intermediate metrics to assess the degree of conflict resolution)
 
 ```python
 from kmatrix_cr.config.config import Config
