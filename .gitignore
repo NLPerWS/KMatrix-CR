@@ -11,8 +11,8 @@
 !/images/
 !/images/** 
 
-!/font_kmatrix2/
-!/font_kmatrix2/** 
+!/font_kmatrix_cr/
+!/font_kmatrix_cr/** 
 
 !/flask_server.py
 !/root_config.py
