@@ -11,6 +11,11 @@
 !/images/
 !/images/** 
 
+!/font_kmatrix2/
+!/font_kmatrix2/** 
+
+!/flask_server.py
+!/root_config.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

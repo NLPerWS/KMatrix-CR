@@ -140,8 +140,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 MAX_LENGTH = int(10000)  # Hardcoded max length to avoid infinite loop
-
+from transformers import AutoTokenizer,LlamaForCausalLM
 MODEL_CLASSES = {
+    "llama": (LlamaForCausalLM,AutoTokenizer),
     "gpt2": (GPT2LMHeadModel, GPT2Tokenizer),
     "opt": (OPTForCausalLM, GPT2Tokenizer),
     "ctrl": (CTRLLMHeadModel, CTRLTokenizer),
@@ -374,7 +375,7 @@ def format_out(generated_text, prompt, generated_tokens, gold_ref=None):
                 'ended'      : False,
                 'tokens'     : generated_tokens,
                 'prompt'     : prompt,
-                'gen_text'   : generated_text, 
+                'gen_answer'   : generated_text, 
                 'len'        : 0,
                 'nll4tok'    : [],
                 'ppl4tok'    : [],
@@ -533,9 +534,9 @@ def main(args):
         assert args.contrastive_prompt is not None
         student_lm = model 
         contrastive_ids = tokenizer(args.contrastive_prompt, return_tensors='pt')
-        print(contrastive_ids['input_ids'])
+        # print(contrastive_ids['input_ids'])
         contrastive_out = student_lm(contrastive_ids['input_ids'].to(model.device))
-        print(contrastive_out.logits, len(contrastive_out.past_key_values))
+        # print(contrastive_out.logits, len(contrastive_out.past_key_values))
         student_lm_past = contrastive_out.past_key_values
         student_lm_past = [[l1.expand(5, -1, -1, -1) for l1 in l2] for l2 in student_lm_past]
         model.prepare_inputs_for_generation = our_prepare_inputs_for_generation
@@ -580,12 +581,17 @@ def main(args):
 
     if args.do_sample != 'contrastive_search_baseline':
         args.length = adjust_length_to_model(args.length, max_sequence_length=model.config.max_position_embeddings)
-    logger.info(args)
+    # logger.info(args)
 
     if not args.prompt_file:
-        prompt_text = args.prompt if args.prompt else input("Model prompt >>> ")
-        prompt_lst = [prompt_text]
-        ref_lst = [(0, None)] 
+        print("-----------By args.prompt_list------------")
+        # prompt_text = args.prompt if args.prompt else input("Model prompt >>> ")
+        # prompt_lst = [prompt_text]
+        # ref_lst = [(0, None)] 
+        # <|endoftext|> 
+        prompt_lst = ["Please refer to the knowledge I provided to answer my question.\nKnowledge:\n".join(q['c_text']) + "\n\nQuestion: "+q['question']+"\n\nAnswer:\n" for q in args.prompt_list]
+        ref_lst = [(0, None) for p in prompt_lst] 
+        
     elif args.prompt_file == 'wikitext' or args.prompt_file == 'cc_news':
         # load wikitext. 
         from datasets import load_dataset, concatenate_datasets
@@ -639,14 +645,14 @@ def main(args):
             ref_lst = [(0, x) for x in ref_lst]
 
         prompt_lst = tokenizer.batch_decode(prompt_ids)
-        print(len(prompt_lst), prompt_lst[:20])
+        # print(len(prompt_lst), prompt_lst[:20])
 
         if args.do_sample == 'gold':
             fout = open(args.outfile, 'w')
             prompt_cont = tokenized_datasets['test'][:2000]['gold'] 
             prompt_cont_lst = tokenizer.batch_decode(prompt_cont)
             for (xx, yy) in zip(prompt_lst, prompt_cont_lst):
-                print(json.dumps({"gen_text":yy, 'prompt':xx}), file=fout) 
+                print(json.dumps({"gen_answer":yy, 'prompt':xx}), file=fout) 
             fout.close() 
 
     else:
@@ -720,10 +726,10 @@ def main(args):
         # load prompts 
         prefix_lst, ref_lst = load_prompts_simple(args.prompt_file)
         prompt_lst = [x[1] for x in prefix_lst]
-        print('loaded prompts', len(prompt_lst)) 
-        print(prompt_lst[:2])
+        # print('loaded prompts', len(prompt_lst)) 
+        # print(prompt_lst[:2])
         prompt_lst = prompt_lst[:2000] 
-        print('loaded prompts', len(prompt_lst)) 
+        # print('loaded prompts', len(prompt_lst)) 
         # prompt_json_lst = load_prompts(args.prompt_file, 1, model.device)
         # print(len(prompt_json_lst))
         # prompt_lst = []
@@ -737,14 +743,13 @@ def main(args):
 
     generation_lst = []
     
-    # LISA 
-    for iidx, prompt_text in enumerate(prompt_lst[:2000]):
+    # LISA   prompt_lst[:2000]
+    for iidx, prompt_text in enumerate(prompt_lst):
         # Different models need different input formatting and/or extra arguments
         requires_preprocessing = args.model_type in PREPROCESSING_FUNCTIONS.keys()
         if requires_preprocessing:
             prepare_input = PREPROCESSING_FUNCTIONS.get(args.model_type)
             preprocessed_prompt_text = prepare_input(args, model, tokenizer, prompt_text)
-
             if model.__class__.__name__ in ["TransfoXLLMHeadModel"]:
                 tokenizer_kwargs = {"add_space_before_punct_symbol": True}
             else:
@@ -763,7 +768,7 @@ def main(args):
         else:
             input_ids = encoded_prompt
 
-        print(len(encoded_prompt[0]), input_ids.shape) 
+        # print(len(encoded_prompt[0]), input_ids.shape) 
         # model_class, tokenizer_class = GPT2LMHeadModel, GPT2Tokenizer
         # model = model_class.from_pretrained(args.model_name_or_path)
         
@@ -826,13 +831,13 @@ def main(args):
             # 确保模型的配置中有 pad_token_id
             if model.config.pad_token_id is None:
                 model.config.pad_token_id = model.config.eos_token_id
-            print('-----------------model.config.eos_token_id---------------------\n',model.config.eos_token_id)
-            print('-----------------model.config.pad_token_id---------------------\n',model.config.pad_token_id)
+            # print('-----------------model.config.eos_token_id---------------------\n',model.config.eos_token_id)
+            # print('-----------------model.config.pad_token_id---------------------\n',model.config.pad_token_id)
             
             if student_lm.config.pad_token_id is None:
                 student_lm.config.pad_token_id = student_lm.config.eos_token_id
-            print('-----------------student_lm.config.eos_token_id---------------------\n',student_lm.config.eos_token_id)
-            print('-----------------student_lm.config.pad_token_id---------------------\n',student_lm.config.pad_token_id)
+            # print('-----------------student_lm.config.eos_token_id---------------------\n',student_lm.config.eos_token_id)
+            # print('-----------------student_lm.config.pad_token_id---------------------\n',student_lm.config.pad_token_id)
             
             output_sequences = model.generate(
                 input_ids=input_ids,
@@ -859,16 +864,16 @@ def main(args):
                 temperature=args.temperature,
                 top_k=args.k,
                 top_p=args.p,
-                min_prob=args.min_prob,
+                # min_prob=args.min_prob,
                 repetition_penalty=args.repetition_penalty,
                 do_sample=False,
                 num_beams=args.num_beam,
                 num_return_sequences=args.num_return_sequences,
-                student_lm=student_lm,
-                teacher_student=True,
-                model_kwargs_student={"past":student_lm_past, "useprompt":True}, 
-                st_coef=args.st_coef,
-                student_min_prob=args.student_min_prob,
+                # student_lm=student_lm,
+                # teacher_student=True,
+                # model_kwargs_student={"past":student_lm_past, "useprompt":True}, 
+                # st_coef=args.st_coef,
+                # student_min_prob=args.student_min_prob,
 
             )
             print('student=prompt')

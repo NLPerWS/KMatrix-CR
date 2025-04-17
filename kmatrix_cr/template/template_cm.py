@@ -12,6 +12,7 @@ import torch
 from kmatrix_cr.utils.common_utils import eval
 import shutil
 
+
 class CMTemplate:
     ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","retrieveorgenerated","llms_believe_the_earth_is_flat"]
     
@@ -198,8 +199,9 @@ class CMTemplate:
                 default='checkpoint-200000',
                 type=str,
             )
-            parser.add_argument("--contrastive_decoding", type=str, default="student")
-            parser.add_argument("--contrastive_prompt", type=str, default="I love repetitive text! Here is my writing:")
+            parser.add_argument("--contrastive_decoding", type=str, default="prompt")
+            # parser.add_argument("--contrastive_prompt", type=str, default="I love repetitive text! Here is my writing:")
+            parser.add_argument("--contrastive_prompt", type=str, default="I will use the shortest answer to respond to your question! Please ask your question:")
             parser.add_argument("--do_sample", type=str, default="no")
             parser.add_argument("--stop_token", type=str, default=None, help="Token at which text generation is stopped")
             parser.add_argument(
@@ -233,30 +235,36 @@ class CMTemplate:
             )
             args = parser.parse_args()
             args.model_name_or_path = "gpt2-xl"
+            # args.model_name_or_path = self.llm_model.model_name
             args.model_type = "gpt2"
-            args.length = 256
+            # args.model_type = "llama"
+            args.length = 50
             args.prompt = "<|endoftext|> A version of Sonic the Hedgehog was developed by Ancient and released in 1991"
-            # args.prompt_file = ""
-            # 优先 prompt_file
-            args.prompt_file = self.dataset.dataset_path
+            args.prompt_list = self.data_list
+            args.prompt_file = None
+            # args.prompt_file = self.dataset.dataset_path
             args.student_name_or_path = "gpt2"
+            # args.student_name_or_path = "llama"
             args.st_coef = 1.0
             args.ignore_prefix = "no"
             args.outfile = outfile_path
             args.device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
             args.n_gpu = 0 if args.no_cuda else torch.cuda.device_count()
-
+            print("execute ContrastiveDecoding ...")
             cd_main(args)
 
+            res_list = []
             if os.path.exists(outfile_path):
                 with open(outfile_path, 'r',encoding='utf-8') as reader:
-                    res_list = json.load(reader)
-                # for data,res in zip(self.data_list,res_list):
-                    # data['gen_answer'] = res['gen_text']
+                    for line in reader:
+                        res_list.extend(json.loads(line))
                 os.remove(outfile_path)
-
+                
+            for data,res in zip(self.data_list,res_list):
+                data['gen_answer'] = res['gen_answer'][res['gen_answer'].rfind("Answer:"):].strip()
+                
             result = {
-                "result":res_list
+                "result":self.data_list
             }
 
 
@@ -377,11 +385,17 @@ class CMTemplate:
                     return name
             
             path = {
+                #  generated_passage=1 retrieved_passage=1
                 'com_path':root_path + '/Answer-with-{}/{}/prompt_similar_length/Retrieved-contriever-1-Generated-{}-p1-trunclen-0.jsonl'.format(full_name(reader), dataset, generator),
+                #  generated_passage=1 retrieved_passage=0
                 'gen_path':root_path + '/Answer-with-{}/{}/prompt_similar_length/Retrieved-none-0-Generated-{}-p1-trunclen-0.jsonl'.format(full_name(reader), dataset, generator),
+                # generated_passage=0 retrieved_passage=1
                 'ir_path':root_path + '/Answer-with-{}/{}/prompt_similar_length/Retrieved-contriever-1-Generated-none-p1-trunclen-0.jsonl'.format(full_name(reader), dataset),
+                # generated_passage=0 retrieved_passage=1
                 'llm_path': root_path + f'/Answer-with-{full_name(reader)}/{dataset}/prompt_similar_length/Retrieved-none-1-Generated-none-p3-trunclen-0.jsonl'
             }
+            
+            
             data = context_conflicting_dataset(**path)
             # print("\n\nDiffGR : \n", data.get_diffgr())
             result = {}

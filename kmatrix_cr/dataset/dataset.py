@@ -10,13 +10,14 @@ class Dataset:
         dataset_path: Optional[str] = "",
         dataset_name: Optional[str] = "",
         load_data: bool = True,
+        data_list = [],
     ):
         self.dataset_path = dataset_path
         self.dataset_name = dataset_name
-        self.data_list = []
+        self.data_list = data_list
         if load_data:
             self.load_data()
-            self.data_list = self.data_list[0:5]
+            # self.data_list = self.data_list[0:5]
 
     def load_data(self):
         

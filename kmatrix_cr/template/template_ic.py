@@ -82,8 +82,8 @@ class ICTemplate:
                     Answer:
                 """
                 
-                print("---------------------------------------------------")
-                print(len(prompt))                
+                # print("---------------------------------------------------")
+                # print(len(prompt))                
                 
                 prompt_list.append(prompt)
             
@@ -105,8 +105,7 @@ class ICTemplate:
                 data['prompt'] = data['question']
                 data['response'] = data['ground_truth'][0]
                 
-            
-            factool = Factool(foundation_model="gpt-3.5-turbo",data_list=self.data_list)
+            factool = Factool(foundation_model=self.openai_model.model_name,data_list=self.data_list)
             res = factool.run(inputs=self.data_list)
             
             result = {
