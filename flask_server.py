@@ -193,7 +193,7 @@ class Kninjllm_Flask:
             print("---------------------root_conflict_avoidance_strategy_method----------------\n",root_conflict_avoidance_strategy_method)
                 
             # method and model 匹配校验(有些方法必须使用LLM)  Disent QA    llms-believe-the_earth_is_flat     Concord
-            must_llm_list = ["Coiecd","Aware-Decoding","Contrastive-Decoding","Dola","Disent QA","llms-believe-the_earth_is_flat"]
+            must_llm_list = ["Coiecd","Aware-Decoding","Contrastive-Decoding","Dola","llms-believe-the_earth_is_flat"]
             if root_conflict_avoidance_strategy_method in must_llm_list and ("gpt" in llama_model_path or "deepseek" in llama_model_path):
                 return jsonify({"data": f"{must_llm_list} it is imperative to use LLM", "code": 500})
                 
@@ -219,12 +219,12 @@ class Kninjllm_Flask:
             # 无方法选择
             if root_conflict_avoidance_strategy_method == "None":
                 if "gpt" in llama_model_path:
-                    llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path)  # any
+                    llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
                 elif "deepseek" in llama_model_path:
-                    llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path)  # any
+                    llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
                 else:
-                    llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
-                
+                    llm_model = LLmGenerator(model_path=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature},load_model=True,load_model_mode="llm")  # any
+                            
                 res = llm_model.run(prompt_list=[input_obj['question']],sampling_params={"max_tokens":max_tokens,"temperature":temperature})[0]
                 
                 result = {
@@ -286,11 +286,14 @@ class Kninjllm_Flask:
                 
                 if root_conflict_avoidance_strategy_method == "Disent QA":
                     
-                    # return jsonify({"data": "Disent QA 输入输出没有统一, 会跑自带的数据集,比较慢,跳过 (功能已经接入了)...", "code": 200})
-                    
                     print(f'------------------------CM-Disent QA 测试-----------------------------')
-                    # llm_model = LLmGenerator(model_path=self.default_models_path + "disent_qa/t5-small_disent_qa_train_contextual_baseline_85540_b128_lr0.0001_e20_smax256.ckpt",load_model=False)  # any
-                    llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm",generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
+                    if "gpt" in llama_model_path:
+                        llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
+                    elif "deepseek" in llama_model_path:
+                        llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
+                    else:
+                        llm_model = LLmGenerator(model_path=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature},load_model=True,load_model_mode="llm")  # any
+                    
                     config = Config(dataset=dataset,
                                     llm_model=llm_model,
                                     metrics = ["acc"])
@@ -299,9 +302,10 @@ class Kninjllm_Flask:
                     
                 if root_conflict_avoidance_strategy_method == "llms-believe-the_earth_is_flat":
                     
-                    return jsonify({"data": "llms-believe-the_earth_is_flat 输入输出没有统一, 会跑自带的数据集,比较慢,跳过(功能已经接入了)...", "code": 200})
+                    # return jsonify({"data": "llms-believe-the_earth_is_flat 输入输出没有统一, 会跑自带的数据集,比较慢,跳过(功能已经接入了)...", "code": 200})
+                
                     dataset = Dataset(dataset_path=self.default_datasets_path + "CM/llms_believe_the_earth_is_flat_NQ1.jsonl")
-                    llm_model = LLmGenerator(model_path=llama_model_path,load_model_mode="llm") # ["meta-llama/Llama-2-7b-chat-hf","meta-llama/Llama-2-13b-chat-hf","lmsys/vicuna-7b-v1.5","lmsys/vicuna-13b-v1.5"]
+                    llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm") # ["meta-llama/Llama-2-7b-chat-hf","meta-llama/Llama-2-13b-chat-hf","lmsys/vicuna-7b-v1.5","lmsys/vicuna-13b-v1.5"]
                     config = Config(dataset=dataset,
                                     llm_model=llm_model,
                                     metrics = ["em","preference","acc"],

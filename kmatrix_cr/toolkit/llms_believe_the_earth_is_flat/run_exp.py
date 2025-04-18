@@ -180,7 +180,6 @@ def main(args):
         tokenizer = args.tokenizer
         model = args.model 
 
-    # result_model_name_path = f'./results_{model_name.replace("/","_")}.csv'
     result_model_name_path = f'./results_{model_name.replace("/","_")}.json'
     
     if os.path.exists(result_model_name_path):
@@ -191,7 +190,6 @@ def main(args):
             f.write('')
 
     dataset = args.data_list
-    dataset_name = args.dataset_name
 
     # types of test
     test = ['control', 'credibility', 'logical', 'emotional']
@@ -383,7 +381,6 @@ def main(args):
         with open(result_model_name_path, 'a', newline='') as f:
             temp_data = {
                 'model':model_name,
-                'dataset':dataset_name,
                 'passage':adv_test,
                 'SR':sr,
                 'meanT':mean_turns,
@@ -396,8 +393,6 @@ def main(args):
                 'correct_num': ";".join([str(c) for c in correct_num])
             }
             f.write(json.dumps(temp_data, ensure_ascii=False)+"\n")
-            # writer = csv.writer(f)
-            # writer.writerow([model_name,dataset_name,adv_test,sr,mean_turns,max_turns,min_turns,wrong_answer_counts,persuaded_counts,npd,";".join([str(c) for c in persuasion_counts]), ";".join([str(c) for c in correct_num])])
     
     json_data = []
     if os.path.exists(result_model_name_path):
@@ -407,7 +402,7 @@ def main(args):
                 row['persuasion_counts'] = row['persuasion_counts'].split(';')
                 row['correct_num'] = row['correct_num'].split(';')
                 json_data.append(row)
-        # os.remove(result_model_name_path)
+        os.remove(result_model_name_path)
     
     # json_data = []
     # if os.path.exists(result_model_name_path):
@@ -436,5 +431,4 @@ if __name__ == "__main__":
     parser.add_argument('--tnorm', default=0.8) # default temperature for (response) generation
     args = parser.parse_args()
     args.data_list = []
-    args.dataset_name = "nq"
     result = main(args)

@@ -14,22 +14,22 @@
             </div>
 
             <div style="display:flex; height: calc(100% - 140px);">
-                <!-- <div class="div-textarea">
-                    <div>Input Question</div>
+                <div class="div-textarea">
+                    <div class="div-textarea-title">Question</div>
                     <textarea class="input-textarea"  v-model="inputobj.question"></textarea>
                 </div>
                 <div class="div-textarea">
-                    <div>Input Question</div>
-                    <textarea class="input-textarea"  v-model="inputobj.question"></textarea>
+                    <div class="div-textarea-title">External Knowledge</div>
+                    <textarea class="input-textarea" v-model="inputobj.c_text"></textarea>
                 </div>
                 <div class="div-textarea">
-                    <div>Input Question</div>
-                    <textarea class="input-textarea"  v-model="inputobj.question"></textarea>
-                </div> -->
+                    <div class="div-textarea-title">Parameter Knowledge</div>
+                    <textarea class="input-textarea" v-model="inputobj.m_text"></textarea>
+                </div>
 
-                <textarea class="input-textarea"  v-model="inputobj.question"></textarea>
+                <!-- <textarea class="input-textarea"  v-model="inputobj.question"></textarea>
                 <textarea class="input-textarea" v-model="inputobj.c_text"></textarea>
-                <textarea class="input-textarea" v-model="inputobj.m_text"></textarea>
+                <textarea class="input-textarea" v-model="inputobj.m_text"></textarea> -->
 
             </div>
 
@@ -542,6 +542,10 @@ export default {
 
 }
 
+.div-textarea-title{
+    color:chocolate;
+
+}
 
 .input-textarea {
     /* 禁止拉伸 */
@@ -551,18 +555,11 @@ export default {
     overflow-y: auto;
     font-size: 22px;
     
-    height: calc(100% - 35px);
+    height: calc(100% - 0px);
+    width: calc(100% - 20px);
+
     margin-top: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
-
-
-    border: 1px solid #D9D9D9;
-	border-radius: 10px; /* 圆角 */
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-	transition: transform 0.3s, box-shadow 0.3s; /* 过渡效果 */
-	border-top: 0.4px solid #ebebeb; /* 上边框颜色和厚度 */
-
+    border: 0;
 }
 
 .optiondiv {

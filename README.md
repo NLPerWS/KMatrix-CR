@@ -94,24 +94,24 @@ result = template.run(output_path="cm_coiecd_"+llama_model_path.replace("/","_")
 **CM-Faithful to Context-Context-Faithful**
 ![km1](images/CM-Faithful-to-Context-Context-Faithful.png)
 
-**CM-Faithful-to-Context-Contrastive-Decoding**
+**CM-Faithful to Context-Contrastive-Decoding**
 ![km2](images/CM-Faithful-to-Context-Contrastive-Decoding.png)
 
 **CM-Disentangling Sources-Disent QA**
 ![km2](images/CM-Disentangling-Sources-Disent-QA.png)
 
 
-**CM-Improving-Factuality-Coiecd**
+**CM-Improving Factuality-Coiecd**
 ![km3](images/CM-Improving-Factuality-Coiecd.png)
 
-**CM-Improving-Factuality-Aware-Decoding**
+**CM-Improving Factuality-Aware-Decoding**
 ![km4](images/CM-Improving-Factuality-Aware-Decoding.png)
 
-**IC-Improving-Factuality-ICL-whole**
+**IC-Improving Factuality-ICL-whole**
 ![km5](images/IC-Improving-Factuality-ICL-whole.png)
 
-**IC-Improving-Factuality-ICL-seprate**
+**IC-Improving Factuality-ICL-seprate**
 ![km6](images/IC-Improving-Factuality-ICL-seprate.png)
 
-**IM-Improving-Factuality-Dola**
+**IM-Improving Factuality-Dola**
 ![km7](images/IM-Improving-Factuality-Dola.png)

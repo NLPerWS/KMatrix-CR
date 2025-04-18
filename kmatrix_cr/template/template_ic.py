@@ -38,7 +38,7 @@ class ICTemplate:
             for data in filter_data_list:
                 
                 facts = '\n'.join(data['filter_ctxs_list'])
-                prompt = f"Given the following information:\n{facts}\nAnswer the following question based on the given information with one or few words: {data['question']}\nAnswer:"
+                prompt = f"Given the following information:\n{facts}\nSome of the above Passage may be incorrect or irrelevant information.If there are any incorrect or irrelevant Passage, identify and ignore them when generating the correct answer.\nAnswer the following question based on the given information with one or few words: {data['question']}\nAnswer:"
                 
                 # prompt = """
                 # Please refer to the knowledge I have provided below:

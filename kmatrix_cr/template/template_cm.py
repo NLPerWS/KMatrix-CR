@@ -94,8 +94,8 @@ class CMTemplate:
                     d1['assigned_weight'] = 1
                     d2 = deepcopy(data)
                     d2['assigned_process'] = 1
-                    # d2['context_string'] = data['question']
-                    d2['context_string'] = "Knowledge:\n"+"\n".join(data['c_text']) +"\n\nQuestion:\n"+ data['question']
+                    d2['context_string'] = data['question']
+                    # d2['context_string'] = "Knowledge:\n"+"\n".join(data['c_text']) +"\n\nQuestion:\n"+ data['question']
                     d2['assigned_weight'] = 0
                     
                     new_data_list.append(d1)
@@ -298,12 +298,7 @@ class CMTemplate:
 
         elif self.conflict_method == "llms_believe_the_earth_is_flat":
             from kmatrix_cr.toolkit.llms_believe_the_earth_is_flat.run_exp import main
-            
-            if self.llm_model.model is None or self.llm_model.tokenizer is None:
-                            self.llm_model.load_model()
-                            if self.llm_model.model is None or self.llm_model.tokenizer is None:
-                                raise ValueError("This generator does not have model or tokenizer and does not support the method. Please switch generator or conflict_method and try again.")
-                
+
             parser = argparse.ArgumentParser(description='all-in-one experiment on boolq, nq, and truthfulqa')
             parser.add_argument('-m', '--model', type=str, default='')
             parser.add_argument('-n', '--num_turns', type=int, default=4)
@@ -312,12 +307,9 @@ class CMTemplate:
             parser.add_argument('--tnorm', default=0.8) # default temperature for (response) generation
             args = parser.parse_args()
             args.data_list = self.data_list
-            args.dataset_name = self.dataset.dataset_name
             args.model_name = self.llm_model.model_name
             args.model = self.llm_model.model
             args.tokenizer = self.llm_model.tokenizer
-            args.metrics = self.metrics
-            args.do_eval = do_eval
             
             result = {
                 "result":main(args)
