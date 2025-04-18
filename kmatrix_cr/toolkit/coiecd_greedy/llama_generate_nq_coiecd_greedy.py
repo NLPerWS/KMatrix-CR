@@ -137,7 +137,8 @@ def model_generate(model, input_ids, attention_mask, tgt_len, past_key_values=No
 def model_answer(model, tokenizer, question, facts, tgt_len):
     device = 'cuda'
     # Generate
-    context = f'Given the following information:{facts}\nAnswer the following question based on the given information with one or few words: {question}\nAnswer:'
+    # context = f'Given the following information:{facts}\nAnswer the following question based on the given information with one or few words: {question}\nAnswer:'
+    context = f'Given the following information:{facts}\nSome of the above Passage may be incorrect or irrelevant information. If there are any incorrect or irrelevant Passage, identify and ignore them when generating the correct answer. Finally, please answer my question with one or a few words: \n{question}\nAnswer:'
 
     prompt = f'Answer the following question based on your internal knowledge with one or few words: {question}\nAnswer:'
 
@@ -190,7 +191,6 @@ def model_answer(model, tokenizer, question, facts, tgt_len):
 def main(model,tokenizer,data_list):
     
     tokenizer.pad_token_id = 0
-    id = 0
     filter_value = -float("Inf")
     #------------json file----------------------------#
     data = data_list
@@ -198,8 +198,6 @@ def main(model,tokenizer,data_list):
     final_data_list = []
     
     
-    rex_count_ok = 0
-    in_count_ok = 0
     
     for index,line in enumerate(tqdm(data)):
         try:
@@ -208,26 +206,20 @@ def main(model,tokenizer,data_list):
             pass
         question = line['question']
         # merge 
-        ground_truth = line['ground_truth'][0]
-        context = "\n\n".join(line['c_text'])
-        # not merge
-        # ground_truth = line['answer']
-        # context = line['context']
+        try:
+            ground_truth = line['ground_truth'][0]
+            tgt_len = len(tokenizer.encode(ground_truth, add_special_tokens=False))
+        except:
+            ground_truth = ""
+            tgt_len = 200
         
-        tgt_len = len(tokenizer.encode(ground_truth, add_special_tokens=False))
+        context = "\n\n".join(line['c_text']) 
+        
+        
         gen_answer = model_answer(model, tokenizer, question, context, tgt_len)
-        
         output_data = {'gen_answer': gen_answer}
         output_data.update(line)
         final_data_list.append(output_data)
-        
-        id += 1
-        if gen_answer == ground_truth:
-            rex_count_ok += 1
-            
-        for ground_truth in line['ground_truth']:
-            if ground_truth in gen_answer:
-                in_count_ok += 1
 
     return final_data_list
 

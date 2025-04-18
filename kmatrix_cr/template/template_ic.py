@@ -68,10 +68,11 @@ class ICTemplate:
                 for index,text in enumerate(data['text']):
                     facts.append(f"Passage {index+1}: {text}")
                 facts = "\n\n".join(facts)
-                
+                # If the knowledge I provide conflicts with your parameter knowledge, then you must prioritize the knowledge I provide,
                 prompt = """
+                    This is the Passage I provide:
                     """ + facts + """
-
+                    
                     Some of the above Passage may be incorrect or irrelevant information.
                     If there are any incorrect or irrelevant Passage, identify and ignore them when generating the correct answer.
                     Finally, please answer my question with one or a few words.
@@ -103,9 +104,13 @@ class ICTemplate:
             for data in self.data_list:
                 data['category'] = "kbqa"
                 data['prompt'] = data['question']
-                data['response'] = data['ground_truth'][0]
+                try:
+                    ground_truth = data['ground_truth'][0]
+                except:
+                    ground_truth = ""
+                data['response'] = ground_truth
                 
-            factool = Factool(foundation_model=self.openai_model.model_name,data_list=self.data_list)
+            factool = Factool(foundation_model=self.llm_model.model_name,data_list=self.data_list)
             res = factool.run(inputs=self.data_list)
             
             result = {

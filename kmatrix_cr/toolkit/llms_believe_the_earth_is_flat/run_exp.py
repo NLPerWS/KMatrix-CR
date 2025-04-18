@@ -14,11 +14,6 @@ from tenacity import (
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModel
 import torch
 
-
-openai.api_base = ""
-openai.api_key = ""
-
-
 # wait to avoid the limit
 @retry(wait=wait_random_exponential(min=30, max=120), stop=stop_after_attempt(1000))
 def completion_with_backoff(**kwargs):
@@ -185,18 +180,15 @@ def main(args):
         tokenizer = args.tokenizer
         model = args.model 
 
-    result_model_name_path = f'./results_{model_name.replace("/","_")}.csv'
+    # result_model_name_path = f'./results_{model_name.replace("/","_")}.csv'
+    result_model_name_path = f'./results_{model_name.replace("/","_")}.json'
     
     if os.path.exists(result_model_name_path):
         os.remove(result_model_name_path)
     
-    if os.path.isfile(result_model_name_path):
-        pass
     else:
-        with open(result_model_name_path, 'w', newline='') as f:
-            writer = csv.writer(f)
-            header = ['model', 'dataset', 'passage', 'SR', 'meanT', 'maxT', 'minT', 'wa', 'pd' , 'npd', 'persuasion_counts', 'correct_num']
-            writer.writerow(header)
+        with open(result_model_name_path, 'w', encoding='utf-8') as f:
+            f.write('')
 
     dataset = args.data_list
     dataset_name = args.dataset_name
@@ -389,23 +381,48 @@ def main(args):
         print(f"min turns: {min_turns}")
 
         with open(result_model_name_path, 'a', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow([model_name,dataset_name,adv_test,sr,mean_turns,max_turns,min_turns,wrong_answer_counts,persuaded_counts,npd,";".join([str(c) for c in persuasion_counts]), ";".join([str(c) for c in correct_num])])
+            temp_data = {
+                'model':model_name,
+                'dataset':dataset_name,
+                'passage':adv_test,
+                'SR':sr,
+                'meanT':mean_turns,
+                'maxT':max_turns,
+                'minT':min_turns,
+                'wa':wrong_answer_counts,
+                'pd' :persuaded_counts,
+                'npd':npd,
+                'persuasion_counts':";".join([str(c) for c in persuasion_counts]),
+                'correct_num': ";".join([str(c) for c in correct_num])
+            }
+            f.write(json.dumps(temp_data, ensure_ascii=False)+"\n")
+            # writer = csv.writer(f)
+            # writer.writerow([model_name,dataset_name,adv_test,sr,mean_turns,max_turns,min_turns,wrong_answer_counts,persuaded_counts,npd,";".join([str(c) for c in persuasion_counts]), ";".join([str(c) for c in correct_num])])
     
     json_data = []
     if os.path.exists(result_model_name_path):
         with open(result_model_name_path, 'r',encoding='utf-8') as f:
-            csv_data = f.read()
-        lines = csv_data.strip().split("\n")
-        reader = csv.DictReader(lines)
-        json_data = []
-        for row in reader:
-            row['persuasion_counts'] = row['persuasion_counts'].split(';')
-            row['correct_num'] = row['correct_num'].split(';')
-            json_data.append(row)
-        # json_output = json.dumps(json_data, ensure_ascii=False)
-        # result = json_output
-        os.remove(result_model_name_path)
+            for row in f:
+                row = json.loads(row)
+                row['persuasion_counts'] = row['persuasion_counts'].split(';')
+                row['correct_num'] = row['correct_num'].split(';')
+                json_data.append(row)
+        # os.remove(result_model_name_path)
+    
+    # json_data = []
+    # if os.path.exists(result_model_name_path):
+    #     with open(result_model_name_path, 'r',encoding='utf-8') as f:
+    #         csv_data = f.read()
+    #     lines = csv_data.strip().split("\n")
+    #     reader = csv.DictReader(lines)
+    #     json_data = []
+    #     for row in reader:
+    #         row['persuasion_counts'] = row['persuasion_counts'].split(';')
+    #         row['correct_num'] = row['correct_num'].split(';')
+    #         json_data.append(row)
+    #     # json_output = json.dumps(json_data, ensure_ascii=False)
+    #     # result = json_output
+    #     os.remove(result_model_name_path)
 
     return json_data
             

@@ -54,7 +54,7 @@ class IMTemplate:
             parser.add_argument("--do_shuffle", action="store_true")
             parser.add_argument("--debug", action="store_true")
             parser.add_argument("--seed", type=int, default=42)
-            parser.add_argument("--retry", type=int, default=1)
+            parser.add_argument("--retry", type=int, default=3)
             args = parser.parse_args()
             
             args.model_name=self.llm_model.model_name

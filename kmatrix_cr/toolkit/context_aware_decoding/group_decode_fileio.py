@@ -548,7 +548,7 @@ def main(args=None):
                             export_dict['assigned_model'] = args.model_name_or_path
                             export_dict['output_index'] = len(export_list)
                             export_dict['input_index'] = _fd['input_index']
-                            export_dict['id'] = _fd.get("id","")
+                            # export_dict['id'] = _fd.get("id","")
                             export_list.append(export_dict)
                     else:
                         for _i in range(args.per_device_eval_batch_size):

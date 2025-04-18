@@ -93,3 +93,24 @@ template = CMTemplate(config=config,conflict_method="coiecd")
 result = template.run(output_path="cm_coiecd_"+llama_model_path.replace("/","_")+".json")
 ```
 
+
+**CM-Faithful to Context-Context-Faithful**
+![km1](images/CM-Faithful-to-Context-Context-Faithful.png)
+
+**CM-Faithful-to-Context-Contrastive-Decoding**
+![km2](images/CM-Faithful-to-Context-Contrastive-Decoding.png)
+
+**CM-Improving-Factuality-Coiecd**
+![km3](images/CM-Improving-Factuality-Coiecd.png)
+
+**CM-Improving-Factuality-Aware-Decoding**
+![km4](images/CM-Improving-Factuality-Aware-Decoding.png)
+
+**IC-Improving-Factuality-ICL-whole**
+![km5](images/IC-Improving-Factuality-ICL-whole.png)
+
+**IC-Improving-Factuality-ICL-seprate**
+![km6](images/IC-Improving-Factuality-ICL-seprate.png)
+
+**IM-Improving-Factuality-Dola**
+![km7](images/IM-Improving-Factuality-Dola.png)

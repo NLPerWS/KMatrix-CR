@@ -50,10 +50,10 @@ class CMTemplate:
         # 偏向于外部知识
         elif self.conflict_method == "context-faithful":
             from kmatrix_cr.toolkit.context_faithful_llm.knowledge_conflict import qa_to_prompt
-            if self.llm_model.model is None or self.llm_model.tokenizer is None:
-                self.llm_model.load_model()
-                if self.llm_model.model is None or self.llm_model.tokenizer is None:
-                    raise ValueError("This generator does not have model or tokenizer and does not support the method. Please switch generator or conflict_method and try again.")
+            # if self.llm_model.model is None or self.llm_model.tokenizer is None:
+            #     self.llm_model.load_model()
+            #     if self.llm_model.model is None or self.llm_model.tokenizer is None:
+            #         raise ValueError("This generator does not have model or tokenizer and does not support the method. Please switch generator or conflict_method and try again.")
 
             prompt_list = []
             for data in self.data_list:
@@ -80,17 +80,22 @@ class CMTemplate:
                 for index,data in enumerate(self.data_list):
                     data['input_index'] = index
                     data['assigned_model'] = self.llm_model.model_path
-                    data['gold_answers'] = data['ground_truth'][0]
+                    try:
+                        data['gold_answers'] = data['ground_truth'][0]
+                    except:
+                        data['gold_answers'] = ""
+                    
                     data['article'] = "\n".join(data['c_text'])
                     data['filter_p'] = 1
                     
                     d1 = deepcopy(data)
                     d1['assigned_process'] = 0
-                    d1['context_string'] = "\n".join(data['c_text']) +"\n\n"+ data['question']
+                    d1['context_string'] = "Knowledge:\n"+"\n".join(data['c_text']) +"\n\nQuestion:\n"+ data['question']
                     d1['assigned_weight'] = 1
                     d2 = deepcopy(data)
                     d2['assigned_process'] = 1
-                    d2['context_string'] = data['question']
+                    # d2['context_string'] = data['question']
+                    d2['context_string'] = "Knowledge:\n"+"\n".join(data['c_text']) +"\n\nQuestion:\n"+ data['question']
                     d2['assigned_weight'] = 0
                     
                     new_data_list.append(d1)
@@ -170,7 +175,7 @@ class CMTemplate:
                 with open("output.jsonl", "r",encoding='utf-8') as file:
                     for line in file:
                         final_data_list.append(json.loads(line))
-                os.remove("output.jsonl")
+                # os.remove("output.jsonl")
                 
             else:
                 final_data_list = []
@@ -179,7 +184,7 @@ class CMTemplate:
             assert len(final_data_list) == len(self.data_list)
             
             for data,res_obj in zip(self.data_list,final_data_list):
-                assert data['id'] == res_obj['id']
+                # assert data['id'] == res_obj['id']
                 data['gen_answer'] = res_obj['string']
             
             os.chdir(current_directory)

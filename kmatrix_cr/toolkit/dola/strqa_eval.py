@@ -216,23 +216,27 @@ def main(args):
             model_answer = clean_answer(model_completion, random_guess = (i == retry_times - 1))
             if model_answer is not None:
                 break
-        is_cor = is_correct(model_answer, sample['ground_truth'][0])
+        if "ground_truth" in sample:
+            is_cor = is_correct(model_answer, sample['ground_truth'][0])
+        else:
+            is_cor = False
+            
         answers.append(is_cor)
         result_dict['is_correct'].append(is_cor)
         result_dict['model_answer'].append(model_answer)
         result_dict['model_completion'].append(model_completion)
         result_dict['full_input_text'].append(input_text)
-        if DEBUG:
-            print(f'Full input_text:\n{input_text}\n\n')
-        print(f'Question: {sample["question"]}\n\n'
-            f'Answers: {sample["ground_truth"][0]}\n\n'
-            f'Model Answers: {model_answer}\n\n'
-            f'Model Completion: {model_completion}\n\n'
-            f'Is correct: {is_cor}\n\n')
+        # if DEBUG:
+        #     print(f'Full input_text:\n{input_text}\n\n')
+        # print(f'Question: {sample["question"]}\n\n'
+        #     f'Answers: {sample["ground_truth"][0]}\n\n'
+        #     f'Model Answers: {model_answer}\n\n'
+        #     f'Model Completion: {model_completion}\n\n'
+        #     f'Is correct: {is_cor}\n\n')
 
-        print(f'Num of total question: {len(answers)}, '
-            f'correct num: {sum(answers)}, '
-            f'correct rate: {float(sum(answers))/len(answers)}.')
+        # print(f'Num of total question: {len(answers)}, '
+        #     f'correct num: {sum(answers)}, '
+        #     f'correct rate: {float(sum(answers))/len(answers)}.')
 
     # if mode == "dola" and args.debug:
     #     total_tokens = sum(premature_layer_dist.values())
@@ -240,7 +244,7 @@ def main(args):
     #         for l in candidate_premature_layers:
     #             print('Premature layer {0} was used {1} times, {2}%'.format(l, premature_layer_dist[l], round(premature_layer_dist[l] / total_tokens * 100, 2)))
         
-    print(f"{float(sum(answers))/len(answers)}")
+    # print(f"{float(sum(answers))/len(answers)}")
 
     return result_dict
         

@@ -1,10 +1,9 @@
 import os
 from root_config import RootConfig
 os.environ["CUDA_VISIBLE_DEVICES"] = RootConfig.CUDA_VISIBLE_DEVICES
-os.environ["HTTP_PROXY"] = RootConfig.HTTP_PROXY
-os.environ["HTTPS_PROXY"] = RootConfig.HTTPS_PROXY
 os.environ["SERPER_API_KEY"] = RootConfig.SERPER_API_KEY
 os.environ['OPENAI_API_KEY'] =  RootConfig.OPENAI_API_KEY
+os.environ['DEEPSEEK_API_KEY'] =  RootConfig.DEEPSEEK_API_KEY
 # os.environ.pop('HF_HOME', None)
 
 import sys
@@ -26,6 +25,7 @@ from kmatrix_cr.config.config import Config
 from kmatrix_cr.dataset.dataset import Dataset
 from kmatrix_cr.generator.llm_generator import LLmGenerator
 from kmatrix_cr.generator.openai_generator import OpenAiGenerator
+from kmatrix_cr.generator.deepseek_generator import DeepSeekGenerator
 from kmatrix_cr.template.template_cm import CMTemplate
 from kmatrix_cr.template.template_ic import ICTemplate
 from kmatrix_cr.template.template_im import IMTemplate
@@ -54,6 +54,16 @@ class Kninjllm_Flask:
         self.upload_datasets_json_path = upload_datasets_json_path
         self.upload_datasets_dir_path = upload_datasets_dir_path
         self.current_method = ""
+        
+        self.model_config = {
+                "Llama-2-7b-chat-hf":RootConfig.LLMAM2_7B_CHAT_HF_MODEL_PATH,
+                "Llama-2-13b-chat-hf":RootConfig.LLMAM2_13B_CHAT_HF_MODEL_PATH,
+                "Baichuan2-7B-Chat":RootConfig.BAICHUAN2_7B_CHAT_MODEL_PATH,
+                "Baichuan2-13B-Chat":RootConfig.BAICHUAN2_13B_CHAT_MODEL_PATH,
+                "gpt-3.5-turbo":"gpt-3.5-turbo",
+                "gpt-4o":"gpt-4o",
+                "DeepSeek R1":"deepseek-chat"
+            }
         
         
         if not os.path.exists(self.default_datasets_path):
@@ -115,10 +125,41 @@ class Kninjllm_Flask:
             return jsonify({'message': 'Files successfully uploaded','code':200})
         
         
+        # 获取模型参数知识
+        @self.app.post('/get_parameters_by_question')
+        def get_parameters_by_question():
+            jsondata = request.get_json()
+            question = jsondata["question"]
+            option_params = jsondata["option_params"]
+            try:
+                option_params = json.loads(option_params)
+            except:
+                pass
+            model_name = option_params['model_name']
+            
+            if model_name in self.model_config:
+                llama_model_path = self.model_config[model_name]
+            else:
+                return jsonify({"data": f"Unsupported model: {llama_model_path}", "code": 500})
+            
+            if "gpt" in llama_model_path:
+                llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path)  # any
+            elif "deepseek" in llama_model_path:
+                llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path)  # any
+            else:
+                llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+            
+            res1 = llm_model.run(prompt_list=[question],sampling_params={"max_tokens":500,"temperature":0.0})[0]['content']
+            res2 = llm_model.run(prompt_list=[question],sampling_params={"max_tokens":500,"temperature":0.5})[0]['content']
+            res3 = llm_model.run(prompt_list=[question],sampling_params={"max_tokens":500,"temperature":1.0})[0]['content']
+                
+            result = res1 + "\n\n" + res2 + "\n\n" + res3
+            
+            return jsonify({"data": result, "code": 200})
+        
         # 开始运行任务
         @self.app.post('/chat')
         def chat():
-            
             jsondata = request.get_json()
             
             input_obj = jsondata["input"]
@@ -127,15 +168,22 @@ class Kninjllm_Flask:
             except:
                 pass
             
-            if "question" not in input_obj or "ground_truth" not in input_obj:
-                return jsonify({"data": "input must have: 'question' and 'ground_truth' filed...", "code": 500})
-            
+            # 获取 model_name
             model_name = jsondata["option"]["model_name"]
-            if "Llama-2-7b-chat-hf" in model_name:
-                llama_model_path = "/netcache/huggingface/Llama-2-7b-chat-hf"
+
+            if model_name in self.model_config:
+                llama_model_path = self.model_config[model_name]
+            else:
+                return jsonify({"data": f"Unsupported model: {llama_model_path}", "code": 500})
             openai_model_version = "gpt-3.5-turbo"
             
+            # 获取 method 
             root_conflict_avoidance_strategy = jsondata["option"]["root_conflict_avoidance_strategy"]
+            if "IC" in root_conflict_avoidance_strategy[0]:
+                input_obj['text'] = input_obj['c_text']
+            if "CM" in root_conflict_avoidance_strategy[0]:
+                input_obj['text'] = input_obj['m_text']
+                
             if isinstance(root_conflict_avoidance_strategy,list) and len(root_conflict_avoidance_strategy) == 3:
                 root_conflict_avoidance_strategy_method = root_conflict_avoidance_strategy[2]
             if isinstance(root_conflict_avoidance_strategy,list) and len(root_conflict_avoidance_strategy) == 1:
@@ -144,51 +192,59 @@ class Kninjllm_Flask:
                 root_conflict_avoidance_strategy_method = root_conflict_avoidance_strategy
             print("---------------------root_conflict_avoidance_strategy_method----------------\n",root_conflict_avoidance_strategy_method)
                 
-            if root_conflict_avoidance_strategy_method != "None":
-                if "CM" in root_conflict_avoidance_strategy[0]:
-                    if "c_text" not in input_obj or "m_text" not in input_obj:
-                        return jsonify({"data": "'c_text' and 'm_text' are required for CM conflict avoidance strategy", "code": 500})
+            # method and model 匹配校验(有些方法必须使用LLM)  Disent QA    llms-believe-the_earth_is_flat     Concord
+            must_llm_list = ["Coiecd","Aware-Decoding","Contrastive-Decoding","Dola","Disent QA","llms-believe-the_earth_is_flat","Concord"]
+            if root_conflict_avoidance_strategy_method in must_llm_list and ("gpt" in llama_model_path or "deepseek" in llama_model_path):
+                return jsonify({"data": f"{must_llm_list} it is imperative to use LLM", "code": 500})
                 
-                else:
-                    if "text" not in input_obj:
-                        return jsonify({"data": "'text' are required for IC/IM conflict avoidance strategy", "code": 500})
+            # if root_conflict_avoidance_strategy_method != "None":
+            #     if "CM" in root_conflict_avoidance_strategy[0]:
+            #         if "c_text" not in input_obj or "m_text" not in input_obj:
+            #             return jsonify({"data": "'c_text' and 'm_text' are required for CM conflict avoidance strategy", "code": 500})
+                
+            #     else:
+            #         if "text" not in input_obj:
+            #             return jsonify({"data": "'text' are required for IC/IM conflict avoidance strategy", "code": 500})
                 
             max_tokens = jsondata["option"]["max_tokens"]
             temperature = jsondata["option"]["temperature"]
             
-            # 显存处理
-            if self.current_method != root_conflict_avoidance_strategy_method and self.current_method != "":
-                try:
-                    do_initCatch(clean_knowledge=True,clean_model=True)
-                    # ray.init(
-                    #     num_gpus=torch.cuda.device_count(),
-                    #     ignore_reinit_error=True,
-                    #     include_dashboard=False  # 禁用不需要的仪表盘服务
-                    # )
-                except Exception as e:
-                    print(e)
+            # # 显存处理
+            # if self.current_method != root_conflict_avoidance_strategy_method and self.current_method != "":
+            #     try:
+            #         do_initCatch(clean_knowledge=True,clean_model=True)
+            #         # ray.init(
+            #         #     num_gpus=torch.cuda.device_count(),
+            #         #     ignore_reinit_error=True,
+            #         #     include_dashboard=False  # 禁用不需要的仪表盘服务
+            #         # )
+            #     except Exception as e:
+            #         print(e)
+            
+            
+            
             self.current_method = root_conflict_avoidance_strategy_method
-                
             
             # 无方法选择
             if root_conflict_avoidance_strategy_method == "None":
-                llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                if "gpt" in llama_model_path:
+                    llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path)  # any
+                elif "deepseek" in llama_model_path:
+                    llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path)  # any
+                else:
+                    llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                
                 res = llm_model.run(prompt_list=[input_obj['question']],sampling_params={"max_tokens":max_tokens,"temperature":temperature})[0]
                 
                 result = {
                     "result":[
                         {
                             "quesion":input_obj['question'],
-                            "ground_truth":input_obj['ground_truth'],
                             "gen_answer":res['content']
                         }
                     ]
                 }
-                eval_obj = eval(data=result)
-                for key in eval_obj:
-                    if key != "log_str":
-                        result[key] = eval_obj[key]
-                
+
             else:
                 dataset = Dataset(data_list=[input_obj])
                 # ------------------------------CM----------------------------------------
@@ -199,16 +255,24 @@ class Kninjllm_Flask:
                                     llm_model=llm_model,
                                     metrics = ["acc"])
                     template = CMTemplate(config=config,conflict_method="coiecd")
-                    result = template.run()
+                    result = template.run(do_eval=False)
                     
                 if root_conflict_avoidance_strategy_method == "Context-Faithful":
                         print(f'------------------------CM-Context-Faithful 测试-----------------------------')
-                        llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                        # llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                        if "gpt" in llama_model_path:
+                            llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path)  # any
+                        elif "deepseek" in llama_model_path:
+                            llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path)  # any
+                        else:
+                            llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                        
+                        
                         config = Config(dataset=dataset,
                                         llm_model=llm_model,
                                         metrics = ["acc"])
                         template = CMTemplate(config=config,conflict_method="context-faithful")
-                        result = template.run()
+                        result = template.run(do_eval=False)
                         
                 if root_conflict_avoidance_strategy_method == "Aware-Decoding":
                         print(f'------------------------CM-Aware-Decoding 测试-----------------------------')
@@ -217,7 +281,7 @@ class Kninjllm_Flask:
                                         llm_model=llm_model,
                                         metrics = ["acc"])
                         template = CMTemplate(config=config,conflict_method="aware-decoding")
-                        result = template.run()
+                        result = template.run(do_eval=False)
                         
     
                 if root_conflict_avoidance_strategy_method == "Contrastive-Decoding":
@@ -227,7 +291,7 @@ class Kninjllm_Flask:
                                         llm_model=llm_model,
                                         metrics = ["acc"])
                         template = CMTemplate(config=config,conflict_method="ContrastiveDecoding")
-                        result = template.run()
+                        result = template.run(do_eval=False)
                 
                 if root_conflict_avoidance_strategy_method == "Disent QA":
                     
@@ -255,33 +319,54 @@ class Kninjllm_Flask:
                     result = template.run(do_eval=False)
                     
                 # -----------------------------IC-----------------------------------------------
-                if root_conflict_avoidance_strategy_method == "ICL-whole":
+                if root_conflict_avoidance_strategy_method == "ICL-seprate":
                     print(f'------------------ic ICL-seprate (ICL-seprate) 测试------------------------')
                     openai_model=OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=openai_model_version)  # openai
-                    llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                    # llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                    if "gpt" in llama_model_path:
+                        llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path)  # any
+                    elif "deepseek" in llama_model_path:
+                        llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path)  # any
+                    else:
+                        llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                    
                     config = Config(dataset=dataset,
                                     openai_model=openai_model,
                                     llm_model=llm_model,
                                     metrics = ["acc"],
                                     )
                     template = ICTemplate(config=config,conflict_method="ICL-seprate")
-                    result = template.run()
+                    result = template.run(do_eval=False)
                     
-                if root_conflict_avoidance_strategy_method == "ICL-seprate":
+                if root_conflict_avoidance_strategy_method == "ICL-whole":
                     print(f'----------------ic ICL-whole (ICL-whole) 测试------------------------')
-                    llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                    # llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                    if "gpt" in llama_model_path:
+                        llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path)  # any
+                    elif "deepseek" in llama_model_path:
+                        llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path)  # any
+                    else:
+                        llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                    
                     config = Config(dataset=dataset,
                                     llm_model=llm_model,
                                     metrics = ["acc"],
                                     )
                     template = ICTemplate(config=config,conflict_method="ICL-whole")
-                    result = template.run()
+                    result = template.run(do_eval=False)
                 
                 if root_conflict_avoidance_strategy_method == "Factools":
                     print(f'----------------ic  Factools 测试------------------------')
-                    openai_model=OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=openai_model_version)  # openai
+                    # llm_model=OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=openai_model_version)  # openai
+                    if "gpt" in llama_model_path:
+                        llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path)  # any
+                    elif "deepseek" in llama_model_path:
+                        llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path)  # any
+                    else:
+                        llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
+                    
                     config = Config(dataset=dataset,
-                                    openai_model=openai_model,
+                                    llm_model=llm_model,
                                     metrics = ["acc"],
                                     )
                     template = ICTemplate(config=config,conflict_method="factool")
@@ -296,7 +381,7 @@ class Kninjllm_Flask:
                                     metrics = ["acc"],
                                     )
                     template = IMTemplate(config=config,conflict_method="dola")
-                    result = template.run()
+                    result = template.run(do_eval=False)
                     
                     
                 if root_conflict_avoidance_strategy_method == "Concord":
@@ -332,7 +417,7 @@ class Kninjllm_Flask:
                 "context-faithful-prompt",
                 "text",
                 "ctxs_content_list",    # ICL-seprate
-                "filter_ctxs_list",     # ICL-seprate
+                # "filter_ctxs_list",     # ICL-seprate
                 "detailed_information", # factool
                 "is_correct",
                 "full_input_text",
