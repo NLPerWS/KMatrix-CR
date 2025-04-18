@@ -29,16 +29,13 @@
 | :------: | :--------------------: | :--------------------: |
 |    IC    |        Improving Factuality         |        ICL-whole         |
 |    IC    |        Improving Factuality         |        ICL-seprate         |
-|    IC    |        Improving Factuality         |        Factool         |
 |    CM    |        Faithful to Context         |         Context-Faithful         |
-|    CM    |        Faithful to Context         |         Aware-Decoding         |
 |    CM    |        Faithful to Context         |       ContrastiveDecoding |
 |    CM    |        Faithful to Memory         |         Llms_believe_the_earth_is_flat         |
 |    CM    |         Disentangling Sources         |         Disent_QA         |
 |    CM    |        Improving Factuality         |         COIECD         |
-|    CM    |        Improving Factuality         |         Retrieveorgenerated         |
+|    CM    |        Improving Factuality         |         Aware-Decoding         |
 |    IM    |        Improving Factuality         |        Dola          |
-|    IM    |        Improving Factuality         |        Concord          |
 
 
 
