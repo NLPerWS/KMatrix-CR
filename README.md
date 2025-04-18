@@ -30,10 +30,11 @@
 |    IC    |        Improving Factuality         |        ICL-whole         |
 |    IC    |        Improving Factuality         |        ICL-seprate         |
 |    CM    |        Faithful to Context         |         Context-Faithful         |
-|    CM    |        Faithful to Context         |       ContrastiveDecoding |
-|    CM    |        Faithful to Memory         |         Llms_believe_the_earth_is_flat         |
-|    CM    |         Disentangling Sources         |         Disent_QA         |
-|    CM    |        Improving Factuality         |         COIECD         |
+|    CM    |        Faithful to Context         |       Contrastive-Decoding |
+|    CM    |        Faithful to Memory         |        Refer only to parameter knowledge          |
+|    CM    |        Faithful to Memory         |        Misinfo-QA          |
+|    CM    |         Disentangling Sources         |         Disent QA         |
+|    CM    |        Improving Factuality         |         Coiecd         |
 |    CM    |        Improving Factuality         |         Aware-Decoding         |
 |    IM    |        Improving Factuality         |        Dola          |
 
