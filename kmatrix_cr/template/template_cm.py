@@ -276,70 +276,23 @@ class CMTemplate:
         elif self.conflict_method == "Disent_QA":
 
             from kmatrix_cr.toolkit.disent_qa.query_model import main as disentqa_query_model_main
-            from kmatrix_cr.toolkit.disent_qa.evaluate import main as disentqa_eva_main
+            # from kmatrix_cr.toolkit.disent_qa.evaluate import main as disentqa_eva_main
+            
+            for data in self.data_list:
+                data['context'] = data['c_text']
             
             parser = argparse.ArgumentParser()
             args = parser.parse_args()
+            args.data_list = self.data_list
             args.path = self.dataset.dataset_path
             args.checkpoint_name = self.llm_model.model_name
+            args.llm_model = self.llm_model
+            args.answer_type = "f"
             
-            infer_file_path_list = []
-            for answer_type in ["f","cf","rc","cb"]:
-                args.answer_type = answer_type
-                infer_file_path_list.append(disentqa_query_model_main(args))
-            print("-------------disent_qa query_model finished-------------------")
-            
-            eva_file_name_list = []
-            for infer_file_path in infer_file_path_list:
-                args.path = infer_file_path
-                eva_file_name_list.append(disentqa_eva_main(args))
-            print("-------------disent_qa evaluate finished-------------------")
-            # print("------------------------eva_file_name_list-------------------------\n",eva_file_name_list)
-            
-            res_obj = {}
-            for file_path in eva_file_name_list:
-                with open(file_path,'r',encoding='utf-8') as f:
-                    res_list = f.readlines()
-                if "factual_inference.stat" in file_path:
-                    index = 1
-                    flag = "factual"
-                if "counterfactual_inference.stat" in file_path:
-                    index = 2
-                    flag = "counterfactual"
-                if "closed_book_inference.stat" in file_path:
-                    index = 3
-                    flag = "closed_book"
-                if "random_context_inference.stat" in file_path:
-                    index = 4
-                    flag = "random_context"
-                
-                temp_obj = {}
-                title_list = res_list[0].strip().split(",")
-                score_list = res_list[index].strip().split(",")
-                
-                # print("-------------------------file_path-------------------------\n",file_path)
-                # print("-------------------------index-------------------------\n",index)
-                # print("-------------------------flag-------------------------\n",flag)
-                # print("-------------------------title_list-------------------------\n",title_list)
-                # print("-------------------------score_list-------------------------\n",score_list)
-                # print("======================================================================")
-                
-                assert len(title_list) == len(score_list)
-                
-                for title,score in zip(title_list,score_list):
-                    temp_obj[title] = score
-                
-                res_obj[flag] = temp_obj
-            
-            folder_path = os.getcwd() + "/" + "kmatrix_cr/toolkit/disent_qa/result/"
-            if os.path.exists(folder_path) and os.path.isdir(folder_path):
-                shutil.rmtree(folder_path)
-                os.makedirs(folder_path) # 重新创建空目录
-            else:
-                pass
+            data_list = disentqa_query_model_main(args)
             
             result = {
-                "result":res_obj
+                "result":data_list
             }
 
 

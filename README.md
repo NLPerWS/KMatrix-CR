@@ -97,6 +97,10 @@ result = template.run(output_path="cm_coiecd_"+llama_model_path.replace("/","_")
 **CM-Faithful-to-Context-Contrastive-Decoding**
 ![km2](images/CM-Faithful-to-Context-Contrastive-Decoding.png)
 
+**CM-Disentangling Sources-Disent QA**
+![km2](images/CM-Disentangling-Sources-Disent-QA.png)
+
+
 **CM-Improving-Factuality-Coiecd**
 ![km3](images/CM-Improving-Factuality-Coiecd.png)
 
