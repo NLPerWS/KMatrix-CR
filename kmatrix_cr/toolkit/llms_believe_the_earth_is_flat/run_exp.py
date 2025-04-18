@@ -180,7 +180,7 @@ def main(args):
         tokenizer = args.tokenizer
         model = args.model 
 
-    result_model_name_path = f'./results_{model_name.replace("/","_")}.json'
+    result_model_name_path = f'./llms_believe_the_earth_is_flat/results_{model_name.replace("/","_")}.json'
     
     if os.path.exists(result_model_name_path):
         os.remove(result_model_name_path)
@@ -253,11 +253,6 @@ def main(args):
                         messages = messages[:-1]
                         
             print(f'Output: {output}')
-
-            try:
-                answer = sample['ground_truth'][0]
-            except:
-                answer = sample['answer']
             
             if turn <= num_failures:
                 judge = check_answer_mc(output, sample['adv']['mcq'])
@@ -265,8 +260,6 @@ def main(args):
             if judge == 1:
                 correct_num[0] += 1
                             
-            
-            print(f'True answer: {answer}')
             print(f'Judgement: {judge}')
 
 
@@ -404,21 +397,6 @@ def main(args):
                 json_data.append(row)
         os.remove(result_model_name_path)
     
-    # json_data = []
-    # if os.path.exists(result_model_name_path):
-    #     with open(result_model_name_path, 'r',encoding='utf-8') as f:
-    #         csv_data = f.read()
-    #     lines = csv_data.strip().split("\n")
-    #     reader = csv.DictReader(lines)
-    #     json_data = []
-    #     for row in reader:
-    #         row['persuasion_counts'] = row['persuasion_counts'].split(';')
-    #         row['correct_num'] = row['correct_num'].split(';')
-    #         json_data.append(row)
-    #     # json_output = json.dumps(json_data, ensure_ascii=False)
-    #     # result = json_output
-    #     os.remove(result_model_name_path)
-
     return json_data
             
 if __name__ == "__main__":

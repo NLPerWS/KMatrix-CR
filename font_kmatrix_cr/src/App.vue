@@ -186,6 +186,10 @@ export default {
                         value: "llms-believe-the_earth_is_flat",
                         label: "llms-believe-the_earth_is_flat"
                     },
+                    {
+                        value: "Refer only to parameter knowledge",
+                        label: "Refer only to parameter knowledge"
+                    },
                 ]
             },
             {

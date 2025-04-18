@@ -6,10 +6,10 @@ from kmatrix_cr.config.config import Config
 from kmatrix_cr.utils.common_utils import eval
 
 class IMTemplate:
-    ALLOWED_CONFLICT_METHODS = ["dola","concord"]
+    ALLOWED_CONFLICT_METHODS = ["dola"]
     def __init__(self,
                 config : Config,
-                conflict_method: Literal["dola","concord"],
+                conflict_method: Literal["dola"],
                 args_kwargs: dict = {}
     ):
         if conflict_method not in self.ALLOWED_CONFLICT_METHODS:
@@ -69,52 +69,13 @@ class IMTemplate:
                 data['full_input_text'] = full_input_text
             
             result = {"result":self.data_list}
-
-        elif self.conflict_method == "concord":
-            from kmatrix_cr.toolkit.concord.semantic_filtering.eval_retrieve import main as concord_main
-            
-            if self.args_kwargs['concord_model_weights_path'] == "" or not os.path.exists(self.args_kwargs['concord_model_weights_path']):
-                raise ValueError("concord_model_weights_path must be exists")
-            if self.llm_model.model_name not in ['t5-small','t5-large','t5-3b']:
-                raise ValueError("concord method model must be {t5-small or t5-large or t5-3b}")
-            
-            parser = argparse.ArgumentParser()
-            parser.add_argument("--split", type=str, help="Test for test, val as default", default="val")
-            parser.add_argument("--mode", type=str, help="base, gold", default="base")
-            parser.add_argument("--folder", type=str, default="eval_results")
-            parser.add_argument("--beta", type=float, default=None)
-            parser.add_argument("--conf", type=float, default=None)
-            parser.add_argument("--ret_num", type=int, default=5)
-            parser.add_argument("--temp", type=float, default=0.8)
-            parser.add_argument("--n", type=int, default=4)
-            parser.add_argument("--model", type=str, default="t5-large")
-            parser.add_argument("--nli_model", type=str, default="ynie/albert-xxlarge-v2-snli_mnli_fever_anli_R1_R2_R3-nli")
-            parser.add_argument("--entailment_correction", action="store_true")
-            parser.add_argument("--normalize", action="store_true")
-            parser.add_argument("--dedup", action="store_true")
-            parser.add_argument("--cache_dir", type=str)  # where to cache when using datasets etc
-            parser.add_argument("--store_dir", type=str)  # where to store created caches
-            parser.add_argument("--entail_only", action="store_true")
-            parser.add_argument("--contradiction_only", action="store_true")
-            parser.add_argument("--model_weights_path", type=str,default="")
-            args = parser.parse_args()
-            args.mode = "gold"
-            args.split = "test"
-            args.model = self.llm_model.model_name
-            args.cache_dir = ""
-            args.store_dir = self.dataset.dataset_path
-            args.model_weights_path = self.args_kwargs['concord_model_weights_path']
-            result = concord_main(args)
-            result = {"result":result}
-            
+    
         else:
             result = {}
-        
         
         if do_eval:
             eval_obj = eval(metrics=self.metrics,data=result,data_path="")
             print(eval_obj)
-            
             print(eval_obj['log_str'])
             for key in eval_obj:
                 if key != "log_str":

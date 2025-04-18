@@ -6,7 +6,7 @@ from kmatrix_cr.config.config import Config
 from kmatrix_cr.utils.common_utils import eval
 
 class ICTemplate:
-    ALLOWED_CONFLICT_METHODS = ["ICL-seprate","ICL-whole","factool"]
+    ALLOWED_CONFLICT_METHODS = ["ICL-seprate","ICL-whole"]
     def __init__(self,
                 config : Config,
                 conflict_method: Literal["ICL-seprate","ICL-whole"],
@@ -60,7 +60,7 @@ class ICTemplate:
             }
             
         
-        elif self.conflict_method == "ICL-whole" :
+        elif self.conflict_method == "ICL-whole":
             prompt_list = []
             for data in self.data_list:
                 
@@ -95,28 +95,7 @@ class ICTemplate:
             result = {
                 "result":self.data_list
             }
-        
-        
-        elif self.conflict_method == "factool":
-            
-            from kmatrix_cr.toolkit.factool.factool import Factool
-            
-            for data in self.data_list:
-                data['category'] = "kbqa"
-                data['prompt'] = data['question']
-                try:
-                    ground_truth = data['ground_truth'][0]
-                except:
-                    ground_truth = ""
-                data['response'] = ground_truth
                 
-            factool = Factool(foundation_model=self.llm_model.model_name,data_list=self.data_list)
-            res = factool.run(inputs=self.data_list)
-            
-            result = {
-                "result":res
-            }    
-                    
         else:
             result = {}
         

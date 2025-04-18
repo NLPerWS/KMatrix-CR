@@ -300,6 +300,21 @@ class Kninjllm_Flask:
                     template = CMTemplate(config=config,conflict_method="Disent_QA")
                     result = template.run(do_eval=False)
                     
+                if root_conflict_avoidance_strategy_method == "Refer only to parameter knowledge":
+                    
+                    if "gpt" in llama_model_path:
+                        llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
+                    elif "deepseek" in llama_model_path:
+                        llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
+                    else:
+                        llm_model = LLmGenerator(model_path=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature},load_model=True,load_model_mode="llm")  # any
+                            
+                    config = Config(dataset=dataset,llm_model=llm_model)
+                    template = CMTemplate(config=config,conflict_method="Refer only to parameter knowledge")
+                    result = template.run(do_eval=False)
+                    
+                    
+                    
                 if root_conflict_avoidance_strategy_method == "llms-believe-the_earth_is_flat":
                     
                     # return jsonify({"data": "llms-believe-the_earth_is_flat 输入输出没有统一, 会跑自带的数据集,比较慢,跳过(功能已经接入了)...", "code": 200})
@@ -312,6 +327,8 @@ class Kninjllm_Flask:
                                     )
                     template = CMTemplate(config=config,conflict_method="llms_believe_the_earth_is_flat")
                     result = template.run(do_eval=False)
+                    
+
                     
                 # -----------------------------IC-----------------------------------------------
                 if root_conflict_avoidance_strategy_method == "ICL-seprate":

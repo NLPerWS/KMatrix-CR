@@ -14,11 +14,11 @@ import shutil
 
 
 class CMTemplate:
-    ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","retrieveorgenerated","llms_believe_the_earth_is_flat"]
+    ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","Refer only to parameter knowledge","llms_believe_the_earth_is_flat"]
     
     def __init__(self,
                 config : Config,
-                conflict_method: Literal["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA",'retrieveorgenerated','llms_believe_the_earth_is_flat'],
+                conflict_method: Literal["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","Refer only to parameter knowledge",'llms_believe_the_earth_is_flat'],
                 args_kwargs: dict = {}
     ):
         if conflict_method not in self.ALLOWED_CONFLICT_METHODS:
@@ -296,6 +296,17 @@ class CMTemplate:
             }
 
 
+        elif self.conflict_method == "Refer only to parameter knowledge":
+            from kmatrix_cr.toolkit.Refer_only_to_parameter_knowledge.refer_only_to_parameter_knowledge import main as refer_main
+            parser = argparse.ArgumentParser()
+            args = parser.parse_args()
+            args.data_list = self.data_list
+            args.llm_model = self.llm_model
+            res_list = refer_main(args)
+            result = {
+                "result":res_list
+            }
+
         elif self.conflict_method == "llms_believe_the_earth_is_flat":
             from kmatrix_cr.toolkit.llms_believe_the_earth_is_flat.run_exp import main
 
@@ -306,54 +317,29 @@ class CMTemplate:
             parser.add_argument('--tprob', default=0.2) # default temperature for probing
             parser.add_argument('--tnorm', default=0.8) # default temperature for (response) generation
             args = parser.parse_args()
+            
+            self.data_list = [
+                {
+                    "question":"",
+                    "adv":{
+                        "control":[],
+                        "logical":[],
+                        "credibility":[],
+                        "emotional":[],
+                    }
+                }
+            ]
+            
+            
             args.data_list = self.data_list
+            
+            
             args.model_name = self.llm_model.model_name
             args.model = self.llm_model.model
             args.tokenizer = self.llm_model.tokenizer
             
             result = {
                 "result":main(args)
-            }
-            
-
-        elif self.conflict_method == "retrieveorgenerated":
-            from kmatrix_cr.toolkit.retrieveorgenerated.src.combine import context_conflicting_dataset
-            # step1
-            # pass
-            
-            # step2
-            # 7b-chat 13b-chat gpt-3.5-turbo-0613 gpt-4-0613
-            # nq tqa
-            root_path = self.dataset.dataset_path
-            reader = self.llm_model.model_name
-            generator = self.llm_model.model_name
-            dataset = self.dataset.dataset_name
-            def full_name(name):
-                if name in ['7b-chat', '13b-chat']:
-                    return f"llama_model/{name}"
-                else:
-                    return name
-            
-            path = {
-                #  generated_passage=1 retrieved_passage=1
-                'com_path':root_path + '/Answer-with-{}/{}/prompt_similar_length/Retrieved-contriever-1-Generated-{}-p1-trunclen-0.jsonl'.format(full_name(reader), dataset, generator),
-                #  generated_passage=1 retrieved_passage=0
-                'gen_path':root_path + '/Answer-with-{}/{}/prompt_similar_length/Retrieved-none-0-Generated-{}-p1-trunclen-0.jsonl'.format(full_name(reader), dataset, generator),
-                # generated_passage=0 retrieved_passage=1
-                'ir_path':root_path + '/Answer-with-{}/{}/prompt_similar_length/Retrieved-contriever-1-Generated-none-p1-trunclen-0.jsonl'.format(full_name(reader), dataset),
-                # generated_passage=0 retrieved_passage=1
-                'llm_path': root_path + f'/Answer-with-{full_name(reader)}/{dataset}/prompt_similar_length/Retrieved-none-1-Generated-none-p3-trunclen-0.jsonl'
-            }
-            
-            
-            data = context_conflicting_dataset(**path)
-            # print("\n\nDiffGR : \n", data.get_diffgr())
-            result = {}
-            result['em'] = data.em
-            result['preference'] = data.preference
-
-            result = {
-                "result":result
             }
             
         else:
