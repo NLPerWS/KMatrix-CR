@@ -36,5 +36,4 @@ class RootConfig:
     BAICHUAN2_13B_CHAT_MODEL_PATH = "/netcache/huggingface/Baichuan2-13B-Chat"
     if not os.path.exists(BAICHUAN2_13B_CHAT_MODEL_PATH):
         BAICHUAN2_13B_CHAT_MODEL_PATH = "baichuan-inc/Baichuan2-13B-Chat"
-        
-        
+    

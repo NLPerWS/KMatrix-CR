@@ -227,11 +227,6 @@ export default {
                         value: "ICL-seprate",
                         label: "ICL-seprate"
                     },
-                    {
-                        value: "Factools",
-                        label: "Factools"
-                    },
-
                 ]
             },
         ];
@@ -243,11 +238,7 @@ export default {
                     {
                         value: "Dola",
                         label: "Dola"
-                    },
-                    {
-                        value: "Concord",
-                        label: "Concord"
-                    },
+                    }
                 ]
             },
         ];

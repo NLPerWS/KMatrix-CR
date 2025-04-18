@@ -20,6 +20,7 @@ def df_chunks_generator(lst, n, input_col):
     for i in range(0, len(lst), n):
         small_df = lst.iloc[i:i + n]
         input_items = small_df[input_col].to_list()
+        print('-----------------------------input_items----------------------\n',input_items)
         yield input_items
 
 
