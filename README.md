@@ -100,6 +100,9 @@ result = template.run(output_path="cm_coiecd_"+llama_model_path.replace("/","_")
 **CM-Faithful to Memory-Refer only to parameter knowledge**
 ![km2](images/CM-Faithful-to-Memory-Refer-only-to-parameter-knowledge.png)
 
+**CM-CM-Faithful to Memory-Misinfo-QA**
+![km2](images/CM-Faithful-to-Memory-Misinfo-QA.png)
+
 **CM-Disentangling Sources-Disent QA**
 ![km2](images/CM-Disentangling-Sources-Disent-QA.png)
 

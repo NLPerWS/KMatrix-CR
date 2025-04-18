@@ -192,8 +192,8 @@ class Kninjllm_Flask:
                 root_conflict_avoidance_strategy_method = root_conflict_avoidance_strategy
             print("---------------------root_conflict_avoidance_strategy_method----------------\n",root_conflict_avoidance_strategy_method)
                 
-            # method and model 匹配校验(有些方法必须使用LLM)  Disent QA    llms-believe-the_earth_is_flat     Concord
-            must_llm_list = ["Coiecd","Aware-Decoding","Contrastive-Decoding","Dola","llms-believe-the_earth_is_flat"]
+            # method and model 匹配校验(有些方法必须使用LLM)
+            must_llm_list = ["Coiecd","Aware-Decoding","Contrastive-Decoding","Dola"]
             if root_conflict_avoidance_strategy_method in must_llm_list and ("gpt" in llama_model_path or "deepseek" in llama_model_path):
                 return jsonify({"data": f"{must_llm_list} it is imperative to use LLM", "code": 500})
                 
@@ -313,22 +313,17 @@ class Kninjllm_Flask:
                     template = CMTemplate(config=config,conflict_method="Refer only to parameter knowledge")
                     result = template.run(do_eval=False)
                     
-                    
-                    
-                if root_conflict_avoidance_strategy_method == "llms-believe-the_earth_is_flat":
-                    
-                    # return jsonify({"data": "llms-believe-the_earth_is_flat 输入输出没有统一, 会跑自带的数据集,比较慢,跳过(功能已经接入了)...", "code": 200})
-                
-                    dataset = Dataset(dataset_path=self.default_datasets_path + "CM/llms_believe_the_earth_is_flat_NQ1.jsonl")
-                    llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm") # ["meta-llama/Llama-2-7b-chat-hf","meta-llama/Llama-2-13b-chat-hf","lmsys/vicuna-7b-v1.5","lmsys/vicuna-13b-v1.5"]
-                    config = Config(dataset=dataset,
-                                    llm_model=llm_model,
-                                    metrics = ["em","preference","acc"],
-                                    )
-                    template = CMTemplate(config=config,conflict_method="llms_believe_the_earth_is_flat")
+                if root_conflict_avoidance_strategy_method == "Misinfo-QA":
+                    if "gpt" in llama_model_path:
+                        llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
+                    elif "deepseek" in llama_model_path:
+                        llm_model = DeepSeekGenerator(api_key=os.getenv('DEEPSEEK_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
+                    else:
+                        llm_model = LLmGenerator(model_path=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature},load_model=True,load_model_mode="llm")  # any
+                    config = Config(dataset=dataset,llm_model=llm_model)
+                    template = CMTemplate(config=config,conflict_method="Misinfo-QA")
                     result = template.run(do_eval=False)
                     
-
                     
                 # -----------------------------IC-----------------------------------------------
                 if root_conflict_avoidance_strategy_method == "ICL-seprate":

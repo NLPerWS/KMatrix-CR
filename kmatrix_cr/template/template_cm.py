@@ -14,11 +14,11 @@ import shutil
 
 
 class CMTemplate:
-    ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","Refer only to parameter knowledge","llms_believe_the_earth_is_flat"]
+    ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","Refer only to parameter knowledge","Misinfo-QA"]
     
     def __init__(self,
                 config : Config,
-                conflict_method: Literal["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","Refer only to parameter knowledge",'llms_believe_the_earth_is_flat'],
+                conflict_method: Literal["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","Refer only to parameter knowledge",'Misinfo-QA'],
                 args_kwargs: dict = {}
     ):
         if conflict_method not in self.ALLOWED_CONFLICT_METHODS:
@@ -307,39 +307,41 @@ class CMTemplate:
                 "result":res_list
             }
 
-        elif self.conflict_method == "llms_believe_the_earth_is_flat":
-            from kmatrix_cr.toolkit.llms_believe_the_earth_is_flat.run_exp import main
+        elif self.conflict_method == "Misinfo-QA":
+            from kmatrix_cr.toolkit.Misinfo_QA.pipeline import execute as Misinfo_QA_execute
 
-            parser = argparse.ArgumentParser(description='all-in-one experiment on boolq, nq, and truthfulqa')
-            parser.add_argument('-m', '--model', type=str, default='')
-            parser.add_argument('-n', '--num_turns', type=int, default=4)
-            parser.add_argument('-f', '--failure', default=3) # max num of tries if the output format is illegal
-            parser.add_argument('--tprob', default=0.2) # default temperature for probing
-            parser.add_argument('--tnorm', default=0.8) # default temperature for (response) generation
+            for data in self.data_list:
+                ctxs_list = [{"text":c} for c in data['c_text']]
+                data['ctxs'] = ctxs_list
+
+            parser = argparse.ArgumentParser()
+            parser.add_argument('--top_k', type=int, help='number of \
+                passages to retrieve/number of retrieved passages to read', default=10)
+            parser.add_argument('--multi_answer', action='store_true', help='whether \
+                                to reveal to readers that the answer to produce list of answers')
+            parser.add_argument('--disinfo', action='store_true', help='whether \
+                                to reveal to readers that the passages contain disinformation')
+            parser.add_argument('--extract_and_read', action='store_true', help='whether \
+                                to extract passages from the retrieved passages and read them')
+            parser.add_argument('--size_limit', type=int, help='size limit of the \
+                                input questions to the reader')
+            parser.add_argument('--vote', action='store_true', help='whether to use \
+                                voting to aggregate the answers')
+            parser.add_argument('--holdback', action='store_true', help='whether to \
+                                give instructions to holdback answering in the prompts')
+            parser.add_argument('--sample', action='store_true', help='whether to \
+                                sample the questions to do QA, instead of reading all passages. Here \
+                                we use the last 300 questions as the sample.')
+            parser.add_argument('--naive_vote', action='store_true', help='whether to  \
+                                use naive voting to aggregate the answers')
             args = parser.parse_args()
-            
-            self.data_list = [
-                {
-                    "question":"",
-                    "adv":{
-                        "control":[],
-                        "logical":[],
-                        "credibility":[],
-                        "emotional":[],
-                    }
-                }
-            ]
-            
-            
+                
+            args.vote = True
             args.data_list = self.data_list
-            
-            
-            args.model_name = self.llm_model.model_name
-            args.model = self.llm_model.model
-            args.tokenizer = self.llm_model.tokenizer
+            args.llm_model = self.llm_model
             
             result = {
-                "result":main(args)
+                "result":Misinfo_QA_execute(args)
             }
             
         else:
