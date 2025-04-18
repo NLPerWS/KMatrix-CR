@@ -175,7 +175,7 @@ class CMTemplate:
                 with open("output.jsonl", "r",encoding='utf-8') as file:
                     for line in file:
                         final_data_list.append(json.loads(line))
-                # os.remove("output.jsonl")
+                os.remove("output.jsonl")
                 
             else:
                 final_data_list = []
