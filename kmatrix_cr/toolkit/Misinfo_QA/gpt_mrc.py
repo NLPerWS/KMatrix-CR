@@ -97,7 +97,7 @@ def extract_then_read(data_list, top_k, multi_answer, disinformation_aware, size
         output.append(answer.replace('\n', ' ').strip())
     return output
 
-def multi_reader_vote(data_list, top_k, multi_answer, disinformation_aware, size_limit, holdback, sample_question,engine, ctx_per_call=4):
+def multi_reader_vote(data_list, top_k, multi_answer, disinformation_aware, size_limit, holdback, sample_question,engine, ctx_per_call=5):
     output = []
     import json
     dpr_output = data_list

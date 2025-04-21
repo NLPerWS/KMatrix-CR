@@ -31,7 +31,7 @@
 |    IC    |        Improving Factuality         |        ICL-seprate         |
 |    CM    |        Faithful to Context         |         Context-Faithful         |
 |    CM    |        Faithful to Context         |       Contrastive-Decoding |
-|    CM    |        Faithful to Memory         |        Refer only to parameter knowledge          |
+|    CM    |        Faithful to Memory         |        ReferParameter          |
 |    CM    |        Faithful to Memory         |        Misinfo-QA          |
 |    CM    |         Disentangling Sources         |         Disent QA         |
 |    CM    |        Improving Factuality         |         Coiecd         |
@@ -98,7 +98,7 @@ result = template.run(output_path="cm_coiecd_"+llama_model_path.replace("/","_")
 **CM-Faithful to Context-Contrastive-Decoding**
 ![km2](images/CM-Faithful-to-Context-Contrastive-Decoding.png)
 
-**CM-Faithful to Memory-Refer only to parameter knowledge**
+**CM-Faithful to Memory-ReferParameter**
 ![km2](images/CM-Faithful-to-Memory-Refer-only-to-parameter-knowledge.png)
 
 **CM-CM-Faithful to Memory-Misinfo-QA**

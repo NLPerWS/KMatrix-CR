@@ -14,11 +14,11 @@ import shutil
 
 
 class CMTemplate:
-    ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","Refer only to parameter knowledge","Misinfo-QA"]
+    ALLOWED_CONFLICT_METHODS = ["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","ReferParameter","Misinfo-QA"]
     
     def __init__(self,
                 config : Config,
-                conflict_method: Literal["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","Refer only to parameter knowledge",'Misinfo-QA'],
+                conflict_method: Literal["coiecd","context-faithful","aware-decoding","ContrastiveDecoding","Disent_QA","ReferParameter",'Misinfo-QA'],
                 args_kwargs: dict = {}
     ):
         if conflict_method not in self.ALLOWED_CONFLICT_METHODS:
@@ -296,7 +296,7 @@ class CMTemplate:
             }
 
 
-        elif self.conflict_method == "Refer only to parameter knowledge":
+        elif self.conflict_method == "ReferParameter":
             from kmatrix_cr.toolkit.Refer_only_to_parameter_knowledge.refer_only_to_parameter_knowledge import main as refer_main
             parser = argparse.ArgumentParser()
             args = parser.parse_args()
@@ -316,7 +316,7 @@ class CMTemplate:
 
             parser = argparse.ArgumentParser()
             parser.add_argument('--top_k', type=int, help='number of \
-                passages to retrieve/number of retrieved passages to read', default=10)
+                passages to retrieve/number of retrieved passages to read', default=5)
             parser.add_argument('--multi_answer', action='store_true', help='whether \
                                 to reveal to readers that the answer to produce list of answers')
             parser.add_argument('--disinfo', action='store_true', help='whether \
@@ -336,7 +336,7 @@ class CMTemplate:
                                 use naive voting to aggregate the answers')
             args = parser.parse_args()
                 
-            args.vote = True
+            args.vote = False
             args.data_list = self.data_list
             args.llm_model = self.llm_model
             

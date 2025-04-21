@@ -183,8 +183,8 @@ export default {
                 label: "Faithful to Memory",
                 children: [
                     {
-                        value: "Refer only to parameter knowledge",
-                        label: "Refer only to parameter knowledge"
+                        value: "ReferParameter",
+                        label: "ReferParameter"
                     },
                     {
                         value: "Misinfo-QA",

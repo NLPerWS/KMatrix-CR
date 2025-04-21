@@ -300,7 +300,7 @@ class Kninjllm_Flask:
                     template = CMTemplate(config=config,conflict_method="Disent_QA")
                     result = template.run(do_eval=False)
                     
-                if root_conflict_avoidance_strategy_method == "Refer only to parameter knowledge":
+                if root_conflict_avoidance_strategy_method == "ReferParameter":
                     
                     if "gpt" in llama_model_path:
                         llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
@@ -310,7 +310,7 @@ class Kninjllm_Flask:
                         llm_model = LLmGenerator(model_path=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature},load_model=True,load_model_mode="llm")  # any
                             
                     config = Config(dataset=dataset,llm_model=llm_model)
-                    template = CMTemplate(config=config,conflict_method="Refer only to parameter knowledge")
+                    template = CMTemplate(config=config,conflict_method="ReferParameter")
                     result = template.run(do_eval=False)
                     
                 if root_conflict_avoidance_strategy_method == "Misinfo-QA":

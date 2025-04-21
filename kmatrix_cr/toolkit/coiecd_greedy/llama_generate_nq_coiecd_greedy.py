@@ -138,9 +138,9 @@ def model_answer(model, tokenizer, question, facts, tgt_len):
     device = 'cuda'
     # Generate
     # context = f'Given the following information:{facts}\nAnswer the following question based on the given information with one or few words: {question}\nAnswer:'
-    context = f'Given the following information:{facts}\nSome of the above Passage may be incorrect or irrelevant information. If there are any incorrect or irrelevant Passage, identify and ignore them when generating the correct answer. Finally, please answer my question with one or a few words: \n{question}\nAnswer:'
+    context = f'Given the following information:\n{facts}\n\nSome of the above Passage may be incorrect or irrelevant information. If there are any incorrect or irrelevant Passage, identify and ignore them when generating the correct answer. Finally, please answer my question with one or a few words.\n\nquestion:\n{question}\n\nAnswer:'
 
-    prompt = f'Answer the following question based on your internal knowledge with one or few words: {question}\nAnswer:'
+    prompt = f'Answer the following question based on your internal knowledge with one or few words.\n\nquestion:\n{question}\n\nAnswer:'
 
     batch = [context, prompt]
     inputs = tokenizer(batch, padding=True, return_tensors='pt', truncation=True, max_length=2048).to(device)
@@ -197,22 +197,22 @@ def main(model,tokenizer,data_list):
     # data = data[:10]
     final_data_list = []
     
-    
-    
     for index,line in enumerate(tqdm(data)):
         try:
             line = json.loads(line)
         except:
             pass
         question = line['question']
-        # merge 
-        try:
-            ground_truth = line['ground_truth'][0]
-            tgt_len = len(tokenizer.encode(ground_truth, add_special_tokens=False))
-        except:
-            ground_truth = ""
-            tgt_len = 200
         
+        # merge 
+        # try:
+        #     ground_truth = line['ground_truth'][0]
+        #     tgt_len = len(tokenizer.encode(ground_truth, add_special_tokens=False))
+        # except:
+        #     ground_truth = ""
+        #     tgt_len = 200
+        
+        tgt_len = 200
         context = "\n\n".join(line['c_text']) 
         
         
