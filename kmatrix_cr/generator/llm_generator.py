@@ -101,7 +101,9 @@ class LLmGenerator(RootGenerator):
         if sampling_params is not None:
             for k in sampling_params:
                 param_sampling_params.__setattr__(k, sampling_params[k])
-            
+        else:
+            param_sampling_params = None
+        
         if self.model==None:
             raise ValueError("The model is empty.")
         
