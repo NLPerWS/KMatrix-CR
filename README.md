@@ -21,6 +21,7 @@
 - IM Conflict Resolution
   - Improving Factuality
 
+**We have compiled some work [here](paper_list.md) .**
 
 
 ## 📓 Representative Knowledge Conflict Resolution Model/Method Integration

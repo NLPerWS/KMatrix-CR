@@ -52,7 +52,7 @@ class ICTemplate:
                 # """
                 prompt_list.append(prompt)
             
-            result_list = self.llm_model.run(prompt_list = prompt_list)
+            result_list = self.llm_model.run(prompt_list = prompt_list,sampling_params = {"max_tokens":4096, "temperature":0 })
             for dataobj,resobj in zip(self.data_list,result_list):
                 dataobj['gen_answer'] = resobj['content']
             result = {
@@ -88,7 +88,7 @@ class ICTemplate:
                 
                 prompt_list.append(prompt)
             
-            results = self.llm_model.run(prompt_list = prompt_list)
+            results = self.llm_model.run(prompt_list = prompt_list,sampling_params = {"max_tokens":4096, "temperature":0 })
             for data,res in zip(self.data_list,results):
                 data['gen_answer'] = res['content']
             

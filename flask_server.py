@@ -250,7 +250,6 @@ class Kninjllm_Flask:
                     
                 if root_conflict_avoidance_strategy_method == "Context-Faithful":
                         print(f'------------------------CM-Context-Faithful 测试-----------------------------')
-                        # llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
                         if "gpt" in llama_model_path:
                             llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
                         elif "deepseek" in llama_model_path:
@@ -267,7 +266,7 @@ class Kninjllm_Flask:
                         
                 if root_conflict_avoidance_strategy_method == "Aware-Decoding":
                         print(f'------------------------CM-Aware-Decoding 测试-----------------------------')
-                        llm_model = LLmGenerator(model_path=llama_model_path,load_model=False)  # any
+                        llm_model = LLmGenerator(model_path=llama_model_path,load_model=False,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
                         config = Config(dataset=dataset,
                                         llm_model=llm_model,
                                         metrics = ["acc"])
@@ -347,7 +346,6 @@ class Kninjllm_Flask:
                     
                 if root_conflict_avoidance_strategy_method == "ICL-whole":
                     print(f'----------------ic ICL-whole (ICL-whole) 测试------------------------')
-                    # llm_model = LLmGenerator(model_path=llama_model_path,load_model=True,load_model_mode="llm")  # any
                     if "gpt" in llama_model_path:
                         llm_model = OpenAiGenerator(api_key=os.getenv('OPENAI_API_KEY'),model_version=llama_model_path,generation_kwargs={"max_tokens":max_tokens,"temperature":temperature})  # any
                     elif "deepseek" in llama_model_path:

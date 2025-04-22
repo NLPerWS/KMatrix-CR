@@ -137,10 +137,10 @@ def model_generate(model, input_ids, attention_mask, tgt_len, past_key_values=No
 def model_answer(model, tokenizer, question, facts, tgt_len):
     device = 'cuda'
     # Generate
-    # context = f'Given the following information:{facts}\nAnswer the following question based on the given information with one or few words: {question}\nAnswer:'
-    context = f'Given the following information:\n{facts}\n\nSome of the above Passage may be incorrect or irrelevant information. If there are any incorrect or irrelevant Passage, identify and ignore them when generating the correct answer. Finally, please answer my question with one or a few words.\n\nquestion:\n{question}\n\nAnswer:'
+    context = f'Given the following information:{facts}\nAnswer the following question based on the given information with one or few words: {question}\nAnswer:'
 
-    prompt = f'Answer the following question based on your internal knowledge with one or few words.\n\nquestion:\n{question}\n\nAnswer:'
+    prompt = f'Answer the following question based on your internal knowledge with one or few words: {question}\nAnswer:'
+
 
     batch = [context, prompt]
     inputs = tokenizer(batch, padding=True, return_tensors='pt', truncation=True, max_length=2048).to(device)

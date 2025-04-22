@@ -13,12 +13,11 @@ class LLmGenerator(RootGenerator):
         self,
         model_path:str,
         generation_kwargs: Dict[str, Any] = {
-            "max_tokens":4096,
-            "temperature":0
-            
+            # "max_tokens":4096,
+            # "temperature":0
         },
         load_model: bool = False,
-        load_model_mode: str = "llama"
+        load_model_mode: str = "llm"
     ):
         self.model_path = model_path
         self.generation_kwargs = generation_kwargs

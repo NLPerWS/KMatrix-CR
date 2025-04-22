@@ -14,6 +14,12 @@ class ExternalKnowledgeConflicts:
             
             return query_obj_list
         
+        elif method == "catch":
+            for index,query in enumerate(query_obj_list):
+                query_obj_list[index]['filter_ctxs_list'] = query_obj_list[index]['filter_ctxs_list']
+            
+            return query_obj_list
+        
         
         elif method == "prompt_project":
         
