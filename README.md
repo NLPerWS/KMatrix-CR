@@ -61,14 +61,16 @@
 
 |                        |     Method     |  Acc   |
 | :--------------------: | :------------: | :----: |
-| CM Conflict Resolution | w/o knowledge  | 14.69% |
-|                        |  w/ knowledge  | 28.59% |
-|                        |    +COIECD     | 66.44% |
-| IC Conflict Resolution | w/o knowledge  | 0.01%  |
-|                        |  w/ knowledge  | 42.70% |
-|                        | +Discriminator | 50.00% |
-
-
+| CM Conflict Resolution | w/o knowledge  | 10.00% |
+|                        |  w/ knowledge  | 56.56% |
+|                        |    +COIECD     | 63.98% |
+|                        |    +aware-decoding     | 60.08% |
+| IC Conflict Resolution | w/o knowledge  | 1.00%  |
+|                        |  w/ knowledge  | 20.60% |
+|                        | +Discriminator | 54.00% |
+|                        | +ICL-whole | 34.80% |
+| IM Conflict Resolution | w/o knowledge  | 9.43%  |
+|                        | +Dola | 62.45% |
 
 ## 💫 Example of Tool Usage/Operation
 
