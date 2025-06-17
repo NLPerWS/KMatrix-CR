@@ -5,8 +5,9 @@ def main(args):
     
     prompt_list = []
     for data in data_list:
-        prompt = "Please use your knowledge to answer my Question.\nQuestion:\n" + data['question'] + "\n\nAnswer:\n"
-        prompt_list.append(prompt)
+        # prompt = "Please use your knowledge to answer my Question.\nQuestion:\n" + data['question'] + "\n\nAnswer:\n"
+        # prompt_list.append(prompt)
+        prompt_list.append(data['question'])
         
     res_list = llm_model.run(prompt_list=prompt_list)
     

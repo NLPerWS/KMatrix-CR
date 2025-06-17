@@ -59,18 +59,24 @@
 
 ## 📄 Knowledge Conflict Resolution Evaluation
 
-|                        |     Method     |  Acc   |
-| :--------------------: | :------------: | :----: |
-| CM Conflict Resolution | w/o knowledge  | 10.00% |
-|                        |  w/ knowledge  | 56.56% |
-|                        |    +COIECD     | 63.98% |
-|                        |    +aware-decoding     | 60.08% |
-| IC Conflict Resolution | w/o knowledge  | 1.00%  |
-|                        |  w/ knowledge  | 20.60% |
-|                        | +Discriminator | 54.00% |
-|                        | +ICL-whole | 34.80% |
-| IM Conflict Resolution | w/o knowledge  | 9.43%  |
-|                        | +Dola | 62.45% |
+|                        |     Strategy   |   Method     |  Acc   |
+| :--------------------: | :------------: | :------------: | :----: |
+| CM Conflict Resolution |                  | w/o knowledge  | 29.59% |
+|                        |                  |   w/ knowledge  | 63.29% |
+|                        | Improving Factuality |     +COIECD     | 62.68% |
+|                        | Improving Factuality |     +aware-decoding     | 72.60% |
+|                        | Faithful to Memory |  ReferParameter  | 45.78%  |
+|                        | Faithful to Memory |  Misinfo-QA  | 77.40% |
+|                        | Faithful to Context |     context-faithful  | 99.64% |
+|                        | Faithful to Context |      ContrastiveDecoding  | 92.74% |
+|                        | Disentangling Sources |     Disent_QA  | 74.64%  |
+| IC Conflict Resolution | | w/o knowledge  | 3.60%  |
+|                        | |  w/ knowledge  | 32.50% |
+|                        | Improving Factuality |  +Discriminator | 53.60% |
+|                        | Improving Factuality |  +ICL-whole | 40.40% |
+|                        | Improving Factuality |  +ICL-whole | 40.40% |
+| IM Conflict Resolution | |  w/o knowledge  | 15.55%  |
+|                        | Improving Factuality |  +Dola | 53.60% |
 
 ## 💫 Example of Tool Usage/Operation
 
