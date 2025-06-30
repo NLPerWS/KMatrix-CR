@@ -63,7 +63,7 @@
 | :--------------------: | :------------: | :------------: | :----: |
 | CM Conflict Resolution |                  | w/o knowledge  | 29.59% |
 |                        |                  |   w/ knowledge  | 63.29% |
-|                        | Improving Factuality |     +COIECD     | 62.68% |
+|                        | Improving Factuality |     +COIECD     | 63.98% |
 |                        | Improving Factuality |     +aware-decoding     | 72.60% |
 |                        | Faithful to Memory |  ReferParameter  | 45.78%  |
 |                        | Faithful to Memory |  Misinfo-QA  | 77.40% |
