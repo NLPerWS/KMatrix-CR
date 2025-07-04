@@ -68,7 +68,7 @@
 |                        | Faithful to Memory |  ReferParameter  | 99.49%  |
 |                        | Faithful to Memory |  Misinfo-QA  | 77.40% |
 |                        | Faithful to Context |     context-faithful  | 99.64% |
-|                        | Faithful to Context |      ContrastiveDecoding  | 92.74% |
+|                        | Faithful to Context |      ContrastiveDecoding  | 56.11% |
 |                        | Disentangling Sources |     Disent_QA  | 74.64%  |
 | IC Conflict Resolution | | w/o knowledge  | 1.00%  |
 |                        | |  w/ knowledge  | 21.00% |
