@@ -20,13 +20,14 @@
 - Resolving Knowledge Conflicts in Large Language Models,  [[Paper](https://arxiv.org/abs/2310.00935)]
 - Characterizing mechanisms for factual recall in language models, **EMNLP 2023**, [[Paper](https://arxiv.org/abs/2310.15910)]
 - On the Risk of Misinformation Pollution with Large Language Models, [[Paper](https://arxiv.org/abs/2305.13661)]
-- PIP-KAG: Mitigating Knowledge Conflicts in Knowledge-Augmented Generation via Parametric Pruning, Huang et al, arxiv, https://arxiv.org/pdf/2502.15543
+- ParamMute: Suppressing Knowledge-Critical FFNs for Faithful Retrieval-Augmented Generation, Huang et al, NeurIPS 2025, https://arxiv.org/pdf/2502.15543
 - Mitigating Temporal Misalignment by Discarding Outdated Facts, [[Paper](https://arxiv.org/abs/2305.14824)]
 - AdaCAD: Adaptively Decoding to Balance Conflicts between Contextual and Parametric Knowledge, Wang et al, arxiv, https://arxiv.org/pdf/2409.07394
 - DisentQA: Disentangling Parametric and Contextual Knowledge with Counterfactual Question Answering,  [[Paper](https://arxiv.org/abs/2211.05655)]
 - Contrastive Decoding: Open-ended Text Generation as Optimization, *Li et al.*, **ACL 2023**, [[Paper](https://aclanthology.org/2023.acl-long.687.pdf)]
 - The Earth is Flat because...: Investigating LLMs' Belief towards Misinformation via Persuasive Conversation, [[Paper](https://arxiv.org/abs/2312.09085)]
 - Trustworthy Alignment of Retrieval-Augmented Large Language Models via Reinforcement Learning, Zhang et al, ICML 2024, https://arxiv.org/pdf/2410.16843
+- SPARK: Adaptive Parametric Knowledge Participation for Faithful Retrieval-Augmented Generation, Li et al, arxiv, https://arxiv.org/pdf/2606.27786
 
 
 
